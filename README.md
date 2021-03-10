@@ -1,2 +1,2 @@
-# appsmrlc
-ciappsmrlc
+# reseller
+Reseller MRG
