@@ -25,15 +25,22 @@ class Signup extends CI_Controller {
 		// $data['event'] 				= $this->model_signup->get_list_event($this->session->userdata('iddivisi'));
 		$data['event'] = $this->api_list_event()['event'];
 		
-		// foreach($data['event']['event'] as $row){
-		// 	echo '<option>'.$row->name.'</option>';
-		// };
-		// dd($data);
-		// echo json_encode($data);
-		// die();
 		// $data['list_warrior'] 		= $this->model_signup->get_list_warrior();	
 		// $data['list_task'] 			= $this->model_signup->get_list_task();
 		$data['results'] = $this->api_list_signup();
+		$data['branch'] = $this->api_list_signup()['branch'];
+		$data['class'] = $this->api_list_signup()['class'];
+		$data['list_warrior'] = $this->api_list_signup()['list_warrior'];
+		$data['list_task'] = $this->api_list_signup()['list_task'];
+		// dd($data['list_warrior']);
+		// die();
+		// echo json_encode($data);
+
+		$data['list_signup_type']	= array('SP', 'PTM', 'Others');
+		$data['list_closing_type'] 	= array('DP', 'Lunas');
+		$data['list_closing_class'] = array('Modul', 'Full Program');
+		$data['list_source'] 		= array('Website', 'Facebook Ads', 'WI/CI', 'Email Blast', 'Referral', 'Others');
+		$data['list_payment_type'] 	= array('EDC', 'Transfer', 'Cash', 'Others');
 		// dd($data['results']['waiting']);
 		// echo json_encode($data);
 		// die();
@@ -67,30 +74,19 @@ class Signup extends CI_Controller {
 	public function api_list_signup(){
 		$data = array(
 			'iddivisi' => $this->session->userdata('id_divisi'),
+			'divisi' => $this->session->userdata('divisi'),
+			'id' => $this->session->userdata('id'),
 		);
 		
-		if ((strpos($this->session->userdata('divisi'), 'MRLC')  !== false) || ($this->session->userdata('id') == '28') || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '155')) {
-		
-			$url = api_url('user/SignupApi/api_get_signup1');
+		$url = api_url('user/SignupApi/api_get_signup2');
 
 			$signup = optimus_curl('POST', $url, $data);
 			if($signup != ""){
-				$data['message'] = "Data didapatkan atas";
+				$data['message'] = "Data didapatkan";
 				$data['status'] = "200";
 			}else{
 				$data['status'] = "300";
 			}
-		}else{
-			$url = api_url('user/SignupApi/api_get_signup2');
-
-			$signup = optimus_curl('POST', $url, $data);
-			if($signup != ""){
-				$data['message'] = "Data didapatkan bawah";
-				$data['status'] = "200";
-			}else{
-				$data['status'] = "300";
-			}
-		}	
 		// echo json_encode($signup);
 		return (array)$signup;
 		
@@ -123,75 +119,78 @@ class Signup extends CI_Controller {
 
 	public function api_submit_form_student(){
 		// $this->input->post('phone')
-		$post = $this->input->post();
+		// $post = $this->input->post();
 
 		$data = array(
 			'id' => $this->session->userdata('id'),
 			'iddivisi' => $this->session->userdata('iddivisi'),
 			'divisi' => $this->session->userdata('divisi'),
-			'std_participant_name' => $post['std_participant_name'],
-			'std_birthdate' => $post['std_birthdate'],
-			'std_gender' => $post['std_gender'],
-			'std_phone' => $post['std_phone'],
-			'std_email' => $post['std_email'],
-			'std_address' => $post['std_address'],
-			'std_school' => $post['std_school'],
-			'std_is_vegetarian' => $post['std_is_vegetarian'],
-			'std_is_allergy' => $post['std_is_allergy'],
-			'std_dad_id' => $post['std_dad_id'],
-			'std_dad_name' => $post['std_dad_name'],
-			'std_dad_email' => $post['std_dad_email'],
-			'std_dad_phone' => $post['std_dad_phone'],
-			'std_dad_job' => $post['std_dad_job'],
-			'std_mom_id' => $post['std_mom_id'],
-			'std_mom_name' => $post['std_mom_name'],
-			'std_mom_email' => $post['std_mom_email'],
-			'std_mom_phone' => $post['std_mom_phone'],
-			'std_mom_job' => $post['std_mom_job'],
-			'participant_id_std' => $post['participant_id_std'],
-			'affiliate_id' => $post['affiliate_id'],
-			'std_event_name' => $post['std_event_name'],
-			'std_event_commision' => $post['std_event_commision'],
-			'std_family_discount' => $post['std_family_discount'],
-			'std_signup_type' => $post['std_signup_type'],
-			'std_branch' => $post['std_branch'],
-			'std_class' => $post['std_class'],
-			'std_source' => $post['std_source'],
-			'std_payment_type' => $post['std_payment_type'],
-			'std_atas_nama' => $post['std_atas_nama'],
-			'std_detail_edc' => $post['std_detail_edc'],
-			'std_payment_source' => $post['std_payment_source'],
-			'std_paid_date' => $post['std_paid_date'],
-			'std_closing_type' => $post['std_closing_type'],
-			'modul_class' => $post['modul_class'],
-			'std_id_task' => $post['std_id_task'],
-			'std_closing_type' => $post['std_closing_type'],
-			'full_program_startdate' => $post['full_program_startdate'],
-			'std_remark' => $post['std_remark'],
-			'std_is_upgrade' => $post['std_is_upgrade'],
-			'std_referral' => $post['std_referral'],
-			'std_id_user_closing' => $post['std_id_user_closing'],
-			'std_referral' => $post['std_referral'],
-			'std_referral' => $post['std_referral'],
-			'std_referral' => $post['std_referral'],
-			'std_referral' => $post['std_referral'],
-			'std_referral' => $post['std_referral'],
-			'std_referral' => $post['std_referral'],
+			'std_participant_name' => $this->input->post('std_participant_name'),
+			'std_birthdate' => $this->input->post('std_birthdate'),
+			'std_gender' => $this->input->post('std_gender'),
+			'std_phone' => $this->input->post('std_phone'),
+			'std_email' => $this->input->post('std_email'),
+			'std_address' => $this->input->post('std_address'),
+			'std_school' => $this->input->post('std_school'),
+			// 'std_is_vegetarian' => $this->input->post('std_is_vegetarian'),
+			// 'std_is_allergy' => $this->input->post('std_is_allergy'),
+			'std_dad_id' => $this->input->post('std_dad_id'),
+			'std_dad_name' => $this->input->post('std_dad_name'),
+			'std_dad_email' => $this->input->post('std_dad_email'),
+			'std_dad_phone' => $this->input->post('std_dad_phone'),
+			'std_dad_job' => $this->input->post('std_dad_job'),
+			'std_mom_id' => $this->input->post('std_mom_id'),
+			'std_mom_name' => $this->input->post('std_mom_name'),
+			'std_mom_email' => $this->input->post('std_mom_email'),
+			'std_mom_phone' => $this->input->post('std_mom_phone'),
+			'std_mom_job' => $this->input->post('std_mom_job'),
+			'participant_id_std' => $this->input->post('participant_id_std'),
+			'affiliate_id' => $this->input->post('affiliate_id'),
+			'std_event_name' => $this->input->post('std_event_name'),
+			'std_event_commision' => $this->input->post('std_event_commision'),
+			'std_family_discount' => $this->input->post('std_family_discount'),
+			'std_signup_type' => $this->input->post('std_signup_type'),
+			'std_branch' => $this->input->post('std_branch'),
+			'std_class' => $this->input->post('std_class'),
+			'std_source' => $this->input->post('std_source'),
+			'std_payment_type' => $this->input->post('std_payment_type'),
+			'std_atas_nama' => $this->input->post('std_atas_nama'),
+			'std_detail_edc' => $this->input->post('std_detail_edc'),
+			'std_payment_source' => $this->input->post('std_payment_source'),
+			'std_paid_date' => $this->input->post('std_paid_date'),
+			'std_closing_type' => $this->input->post('std_closing_type'),
+			'modul_class' => $this->input->post('modul_class'),
+			'std_id_task' => $this->input->post('std_id_task'),
+			'std_closing_type' => $this->input->post('std_closing_type'),
+			'full_program_startdate' => $this->input->post('full_program_startdate'),
+			'std_remark' => $this->input->post('std_remark'),
+			'std_is_upgrade' => $this->input->post('std_is_upgrade'),
+			'std_referral' => $this->input->post('std_referral'),
+			'std_id_user_closing' => $this->input->post('std_id_user_closing'),
+			'std_referral' => $this->input->post('std_referral'),
 		);
 		// echo json_encode($data);
 		// die();
-		$url = api_url('user/SignupApi/search_data_by_phone');
+		$url = api_url('user/SignupApi/submit_form_student');
 
 			$submitstd = optimus_curl('POST', $url, $data);
-			if($submitstd != ""){
-				$data['message'] = "Data didapatkan atas";
-				$data['status'] = "200";
-			}else{
-				$data['status'] = "300";
-			}
+			// dd($submitstd);
+			// die();
+			// if($submitstd != ""){
+			// 	$data['message'] = "Data didapatkan atas";
+			// 	$data['status'] = "200"	;
+			// }else{
+			// 	$data['status'] = "300";
+			// }
+			if($submitstd){
+			flashdata('success', 'Berhasil menambahkan data.');
+		}else{
+			flashdata('error', 'Gagal menambahkan data.');
+		}
+		redirect(base_url('user/signup'));
 			// dd((array)$phone);
-		echo json_encode($submitstd);
-		// return (array)$phone;
+		// echo json_encode($submitstd);
+		// return $submitstd;
 		
 	}
 

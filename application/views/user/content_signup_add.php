@@ -143,7 +143,7 @@
 	</div>
 </div>
 
-<div class="modal fade" tabindex="-1" id="modal_participant" data-backdrop="static" data-keyboard="false" style="overflow-y: auto;">
+<!-- <div class="modal fade" tabindex="-1" id="modal_participant" data-backdrop="static" data-keyboard="false" style="overflow-y: auto;">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<form action="<?= base_url('user/signup/submit_form_participant')?>" method="post" id="form_participant" style="padding-left:15px;padding-right: 15px;">
@@ -162,9 +162,9 @@
 									<select class="form-control" name="event_name" id="event_name" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($event as $row){
-											echo "<option value='".$row->id."' data-kids='".$row->is_program_kids."'>".$row->name."</option>";
-										}
+										// foreach($event as $row){
+										// 	echo "<option value='".$row->id."' data-kids='".$row->is_program_kids."'>".$row->name."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -176,9 +176,9 @@
 									<select class="form-control" name="signup_type" id="signup_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($list_signup_type as $row){
-											echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										}
+										// foreach($list_signup_type as $row){
+										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -190,9 +190,9 @@
 									<select class="form-control" name="id_task" id="id_task">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($list_task as $row){
-											echo "<option value='".$row['id']."'>".date('d-M-Y', strtotime($row['date'])).' | '.$row['event'].' | '.$row['location']."</option>";
-										}
+										// foreach($list_task as $row){
+										// 	echo "<option value='".$row['id']."'>".date('d-M-Y', strtotime($row['date'])).' | '.$row['event'].' | '.$row['location']."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -220,9 +220,9 @@
 									<select class="form-control" name="closing_type" id="closing_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($list_closing_type as $row){
-											echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										}
+										// foreach($list_closing_type as $row){
+										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -234,9 +234,9 @@
 									<select class="form-control" name="payment_type" id="payment_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($list_payment_type as $row){
-											echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										}
+										// foreach($list_payment_type as $row){
+										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -269,9 +269,9 @@
 									<select class="form-control" name="id_user_closing" id="id_user_closing" required="">
 										<option value="">- Choose a Warrior -</option>
 										<?php 
-										foreach($list_warrior as $row){
-											echo "<option value='".$row['id']."'>".ucfirst($row['username'])."</option>";
-										}
+										// foreach($list_warrior as $row){
+										// 	echo "<option value='".$row['id']."'>".ucfirst($row['username'])."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -433,9 +433,9 @@
 									<select class="form-control" name="source" id="source" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										foreach($list_source as $row){
-											echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										}
+										// foreach($list_source as $row){
+										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										// }
 										?>
 									</select>
 								</div>
@@ -463,12 +463,12 @@
 		</div>
 
 	</div>
-</div>
+</div> -->
 
 <div class="modal fade" tabindex="-1" id="modal_student" data-backdrop="static" data-keyboard="false" style="overflow-y: auto;">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
-			<form action="<?= base_url('user/signup/submit_form_student')?>" method="post" id="form_student" style="padding-left:15px;padding-right: 15px;">
+			<form action="<?= base_url('user/signup/api_submit_form_student')?>" method="post" id="form_student" style="padding-left:15px;padding-right: 15px;">
 				<div class="modal-header" style="background-color:#ec407a ;color:#fff">
 					<h4 class="modal-title" id="header_std">FORM DATA | NEW STUDENT</h4>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -498,9 +498,9 @@
 									<select class="form-control" name="std_signup_type" id="std_signup_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($list_signup_type as $row){
-										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										// }
+										foreach($list_signup_type as $row){
+											echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -512,9 +512,9 @@
 									<select class="form-control" name="std_id_task" id="std_id_task">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($list_task as $row){
-										// 	echo "<option value='".$row['id']."'>".date('d-M-Y', strtotime($row['date'])).' | '.$row['event'].' | '.$row['location']."</option>";
-										// }
+										foreach($list_task as $row){
+											echo "<option value='".$row->id."'>".date('d-M-Y', strtotime($row->date)).' | '.$row->event.' | '.$row->location."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -557,9 +557,9 @@
 									<select class="form-control" name="std_closing_type" id="std_closing_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($list_closing_class as $row){
-										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										// }
+										foreach($list_closing_class as $row){
+											echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -585,9 +585,9 @@
 									<select class="form-control" name="std_branch" id="std_branch" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($branch as $row){
-										// 	echo "<option value='".$row['branch_id']."'>".ucfirst($row['branch_name'])."</option>";
-										// }
+										foreach($branch as $row){
+											echo "<option value='".$row->branch_id."'>".ucfirst($row->branch_name)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -599,9 +599,9 @@
 									<select class="form-control" name="std_class" id="std_class" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($class as $row){
-										// 	echo "<option value='".$row['class_id']."'>".ucfirst($row['class_name'])."</option>";
-										// }
+										foreach($class as $row){
+											echo "<option value='".$row->class_id."'>".ucfirst($row->class_name)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -613,9 +613,9 @@
 									<select class="form-control" name="std_payment_type" id="std_payment_type" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($list_payment_type as $row){
-										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										// }
+										foreach($list_payment_type as $row){
+											echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -665,9 +665,9 @@
 									<select class="form-control" name="std_id_user_closing" id="std_id_user_closing" required="">
 										<option value="">- Choose a Warrior -</option>
 										<?php 
-										// foreach($list_warrior as $row){
-										// 	echo "<option value='".$row['id']."'>".ucfirst($row['username'])."</option>";
-										// }
+										foreach($list_warrior as $row){
+											echo "<option value='".$row->id."'>".ucfirst($row->username)."</option>";
+										}
 										?>
 									</select>
 								</div>
@@ -829,9 +829,9 @@
 									<select class="form-control" name="std_source" id="std_source" required="">
 										<option value="">- Choose an option -</option>
 										<?php 
-										// foreach($list_source as $row){
-										// 	echo "<option value='".$row."'>".ucfirst($row)."</option>";
-										// }
+										foreach($list_source as $row){
+											echo "<option value='".$row."'>".ucfirst($row)."</option>";
+										}
 										?>
 									</select>
 								</div>
