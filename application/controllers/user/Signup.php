@@ -157,6 +157,7 @@ class Signup extends CI_Controller {
 			'std_atas_nama' => $this->input->post('std_atas_nama'),
 			'std_detail_edc' => $this->input->post('std_detail_edc'),
 			'std_payment_source' => $this->input->post('std_payment_source'),
+			'std_paid_value' => $this->input->post('std_paid_value'),
 			'std_paid_date' => $this->input->post('std_paid_date'),
 			'std_closing_type' => $this->input->post('std_closing_type'),
 			'modul_class' => $this->input->post('modul_class'),
@@ -182,7 +183,7 @@ class Signup extends CI_Controller {
 			// }else{
 			// 	$data['status'] = "300";
 			// }
-			if($submitstd){
+			if($submitstd !== ""){
 			flashdata('success', 'Berhasil menambahkan data.');
 		}else{
 			flashdata('error', 'Gagal menambahkan data.');
