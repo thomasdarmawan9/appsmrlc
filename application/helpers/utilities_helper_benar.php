@@ -461,6 +461,7 @@ if ( ! function_exists('setNewDateTime')){
     return $date->format('Y-m-d H:i:s');
   }
 }
+
 if( ! function_exists('exportToExcel')){
   function exportToExcel($data = array(), $list_fields = array(), $title = 'test', $filename = 'test'){
     $CI     = &get_instance();

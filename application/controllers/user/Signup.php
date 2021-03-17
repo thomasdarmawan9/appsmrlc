@@ -117,6 +117,112 @@ class Signup extends CI_Controller {
 		
 	}
 
+	public function api_json_get_batch_list(){
+		// $this->input->post('phone')
+		$data = array( 
+			'event' => $this->input->post('event'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_get_batch_list');
+
+			$batch_list = optimus_curl('POST', $url, $data);
+			if($batch_list!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($batch_list);
+		// return (array)$phone;
+		
+	}
+
+	
+	public function api_json_master_get_detail_transaction(){
+		// $this->input->post('phone')
+		$data = array( 
+			'id' => $this->input->post('id'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_master_get_detail_transaction');
+
+			$det_tans = optimus_curl('POST', $url, $data);
+			if($det_tans!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($det_tans);
+		// return (array)$phone;
+		
+	}
+
+	public function all(){
+		
+		$data['branch'] = $this->api_get_all()['branch'];
+		$data['class'] = $this->api_get_all()['class'];
+		$data['list_warrior'] = $this->api_get_all()['list_warrior'];
+		$data['list_task'] = $this->api_get_all()['list_task'];
+		$data['filter'] = $this->api_get_all();
+		$data['event'] = $this->api_get_all()['event'];
+		$data['list'] = $this->api_get_all()['list'];
+		// dd($data['filter']);
+		// die();
+		set_active_menu('List Signup');
+		init_view('user/content_signup_list',$data);
+	}
+
+	public function api_get_all(){
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'divisi' => $this->session->userdata('divisi'),
+			'filter' => $this->input->get()
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/api_all');
+
+			$all = optimus_curl('POST', $url, $data);
+			if($all != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// $data['list'] = $this->model_signup->get_data_signup_approved($this->session->userdata('id'), $parameter);
+		// echo json_encode($all);
+		return (array)$all;
+	}
+
+	public function api_export(){
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'divisi' => $this->session->userdata('divisi'),
+			'iddivisi' => $this->session->userdata('iddivisi'),
+			'filter' => $this->input->get()
+		);
+		$url = api_url('user/SignupApi/export_data_transaction');
+
+			$data = optimus_curl('POST', $url, $data);
+
+			if($data != ""){
+		// dd($data);
+		// die();
+				$filename 	= "Data_transaksi_".strtotime(setNewDateTime());
+				exportToExcel($data->results, $data->list_fields, 'Sheet 1', $filename);
+				
+			}else{
+				$data['status'] = "300";
+			}
+		// $data['list'] = $this->model_signup->get_data_signup_approved($this->session->userdata('id'), $parameter);
+		// echo json_encode($export);
+	}
+
 	public function api_submit_form_student(){
 		// $this->input->post('phone')
 		// $post = $this->input->post();
@@ -193,188 +299,7 @@ class Signup extends CI_Controller {
 		// echo json_encode($submitstd);
 		// return $submitstd;
 		
-	}
-
-
-
-	public function submit_data_referral(){
-		$post = $this->input->post();
-		$timestamp = setNewDateTime();
-		$isExist = $this->model_signup->is_email_exist($post['email']);
-		if(empty($post['gender'])){
-			$post['gender'] = '-';
-		}
-		if(!$isExist){
-			$participant = array(
-							'participant_name' 	=> $post['participant_name'],
-							'birthdate' 		=> $post['birthdate'],
-							'gender' 			=> $post['gender'],
-							'phone' 			=> $post['phone'],
-							'email' 			=> $post['email'],
-							'address' 			=> $post['address'],
-							'school' 			=> $post['school'],
-							'is_vegetarian' 	=> (!empty($post['is_vegetarian']))? 1 : 0,
-							'is_allergy' 		=> (!empty($post['is_allergy']))? 1 : 0,
-							'dad_name' 			=> $post['dad_name'],
-							'dad_phone' 		=> $post['dad_phone'],
-							'dad_email' 		=> $post['dad_email'],
-							'dad_job' 			=> $post['dad_job'],
-							'mom_name' 			=> $post['mom_name'],
-							'mom_phone' 		=> $post['mom_phone'],
-							'mom_email' 		=> $post['mom_email'],
-							'mom_job' 			=> $post['mom_job'],
-							'date_created' 		=> $timestamp
-							); 
-			$insert_id = $this->model_signup->insert_participant($participant);
-			$detail_event = $this->model_signup->get_detail_event($post['event_name']);
-			
-			if($post['signup_type'] == 'sp'){
-				$incentive = array(
-							'id_task' 			=> $post['id_task'],
-							'id_user' 			=> $post['id_user_closing'],
-							'peserta' 			=> $post['participant_name'],
-							'total' 			=> $post['paid_value'],
-							'jenis_lunas' 		=> $post['closing_type'],
-							'tgl_proses' 		=> date('Y-m-d'),
-							'program_lain'		=> $post['event_name'],
-							'komisi_program_lain' => ($post['closing_type'] == 'lunas')? $detail_event['lunas'] : $detail_event['dp'] 
-							);
-
-				$insert_incentive = $this->model_signup->insert_incentive($incentive);
-			}
-
-			$transaction = array(
-							'participant_id' 	=> $insert_id,
-							'event_name' 		=> $post['event_name'],
-							'event_commision' 	=> $detail_event['lunas'],
-							'event_price' 		=> $detail_event['price'],
-							'signup_type' 		=> $post['signup_type'],
-							'source' 			=> 'referral',
-							'paid_value' 		=> $post['paid_value'],
-							'paid_date' 		=> $post['paid_date'],
-							'closing_type' 		=> $post['closing_type'],
-							'remark' 			=> $post['remark'],
-							'is_paid' 			=> 0,
-							'is_attend' 		=> 0,
-							'batch_id' 			=> 0,
-							'id_task' 			=> $post['id_task'],
-							'referral' 			=> $post['ref_username'],
-							'id_affiliate' 		=> $post['id_affiliate'],
-							'id_user_closing' 	=> $post['id_user_closing'],
-							'id_user_input' 	=> $this->session->userdata('id'),
-							'id_user_approve' 	=> '',
-							'timestamp' 		=> $timestamp
-							);
-			$insert_transaction = $this->model_signup->insert_transaction($transaction);
-			if($insert_transaction){
-				$url = $this->config->item('reseller_url').'request/set_affiliate_is_paid';
-				$response = curl_post($url, array('id' => $post['id_affiliate']));
-				flashdata('success', 'Berhasil menambahkan data.');
-			}else{
-				flashdata('error', 'Gagal menambahkan data.');
-			}
-
-		}else{
-			flashdata('error', 'Maaf, data peserta sudah ada di database');
-		}
-
-		redirect(base_url('user/signup/'));
-	}
-
-	public function submit_data_reattendance(){
-		$post = $this->input->post();
-		$participant = array(
-						'birthdate' 		=> $post['birthdate'],
-						'address' 			=> $post['address'],
-						'school' 			=> $post['school'],
-						'is_vegetarian' 	=> (!empty($post['is_vegetarian']))? 1 : 0,
-						'is_allergy' 		=> (!empty($post['is_allergy']))? 1 : 0,
-						'dad_name' 			=> $post['dad_name'],
-						'dad_phone' 		=> $post['dad_phone'],
-						'dad_email' 		=> $post['dad_email'],
-						'dad_job' 			=> $post['dad_job'],
-						'mom_name' 			=> $post['mom_name'],
-						'mom_phone' 		=> $post['mom_phone'],
-						'mom_email' 		=> $post['mom_email'],
-						'mom_job' 			=> $post['mom_job'],
-						);
-		$update_participant = $this->model_signup->update_participant($participant, $post['participant_id']);
-		$detail_event = $this->model_signup->get_detail_event($post['event_name']);
-		if($post['signup_type'] == 'sp'){
-			$incentive = array(
-						'id_task' 			=> $post['id_task'],
-						'id_user' 			=> $post['id_user_closing'],
-						'peserta' 			=> $post['participant_name'],
-						'total' 			=> $post['paid_value'],
-						'jenis_lunas' 		=> $post['closing_type'],
-						'tgl_proses' 		=> date('Y-m-d'),
-						'program_lain'		=> $post['event_name'],
-						'komisi_program_lain' => ($post['closing_type'] == 'lunas')? $detail_event['lunas'] : $detail_event['dp'] 
-						);
-
-			$insert_incentive = $this->model_signup->insert_incentive($incentive);
-		}
-		$transaction = array(
-						'participant_id' 	=> $post['participant_id'],
-						'event_name' 		=> $post['event_name'],
-						'event_commision' 	=> $detail_event['lunas'],
-						'event_price' 		=> $detail_event['price'],
-						'signup_type' 		=> $post['signup_type'],
-						'source' 			=> $post['source'],
-						'paid_value' 		=> $post['paid_value'],
-						'paid_date' 		=> $post['paid_date'],
-						'closing_type' 		=> $post['closing_type'],
-						'remark' 			=> $post['remark'],
-						'is_paid' 			=> 0,
-						'is_attend' 		=> 0,
-						'batch_id' 			=> 0,
-						'id_task' 			=> $post['id_task'],
-						'referral' 			=> '',
-						'id_affiliate' 		=> '',
-						'id_user_closing' 	=> $post['id_user_closing'],
-						'id_user_input' 	=> $this->session->userdata('id'),
-						'id_user_approve' 	=> '',
-						'timestamp' 		=> setNewDateTime()
-						);
-		$insert_transaction = $this->model_signup->insert_transaction($transaction);
-		if($insert_transaction){
-			flashdata('success', 'Berhasil menambahkan data.');
-		}else{
-			flashdata('error', 'Gagal menambahkan data.');
-		}
-		redirect(base_url('user/signup/'));
-	}
-
-		
-	public function all(){
-
-		$data['list_warrior'] 		= $this->model_signup->get_list_warrior();	
-		$data['list_task'] 			= $this->model_signup->get_list_task_all();
-		$data['branch'] 			= $this->model_signup->get_branch_active();
-		$data['class'] 				= $this->model_signup->get_class_active();
-		$data['filter'] 			= $this->input->get();
-		if(!empty($this->input->get())){
-			if ((strpos($this->session->userdata('divisi'), 'MRLC')  !== false) || ($this->session->userdata('id') == '28') || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '155')) {
-				$mrlc 				= $this->db->get_where('divisi', array('departement' => 'MRLC 1'))->row_array()['id'];
-				$data['event'] 		= $this->model_signup->get_list_event($mrlc);
-				$data['list']  		= $this->model_signup->get_data_signup_approved($mrlc, $this->input->get());
-			}else{
-				$data['event'] 		= $this->model_signup->get_list_event($this->session->userdata('iddivisi'));
-				$data['list'] 		= $this->model_signup->get_data_signup_approved($this->session->userdata('iddivisi'), $this->input->get());
-			}
-		}else{
-			if ((strpos($this->session->userdata('divisi'), 'MRLC')  !== false) || ($this->session->userdata('id') == '28')) {
-				$mrlc 				= $this->db->get_where('divisi', array('departement' => 'MRLC 1'))->row_array()['id'];
-				$data['event'] 		= $this->model_signup->get_list_event($mrlc);
-			}else{
-				$data['event'] 		= $this->model_signup->get_list_event($this->session->userdata('iddivisi'));
-			}
-			$data['list'] 			= array();			
-		}
-		// $data['list'] = $this->model_signup->get_data_signup_approved($this->session->userdata('id'), $parameter);
-		set_active_menu('List Signup');
-		init_view('user/content_signup_list',$data);
-	}
+	}	
 
 	public function delete(){
 		$id = $this->input->post('id');
@@ -387,45 +312,144 @@ class Signup extends CI_Controller {
 		echo json_encode($result);
 	}
 
-	public function export_data_transaction(){
-		// dd(column_letter(0));
-		if ((strpos($this->session->userdata('divisi'), 'MRLC')  !== false) || ($this->session->userdata('id') == '28') || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '155')) {
-			$divisi	= $this->db->get_where('divisi', array('departement' => 'MRLC-1'))->row_array()['id'];
-		}else{
-			$divisi = $this->session->userdata('iddivisi');
-		}
-		$data		= $this->model_signup->export_data_signup_approved($divisi, $this->input->get());
-		$filename 	= "Data_transaksi_".strtotime(setNewDateTime());
-		exportToExcel($data, 'Sheet 1', $filename);
+
+	// public function json_email_exist(){
+	// 	$isExist = $this->model_signup->is_email_exist($this->input->post('email'));
+	// 	echo json_encode($isExist);
+	// }
+
+	public function api_json_email_exist(){
+		// $this->input->post('phone')
+		$data = array( 
+			'email' => $this->input->post('email'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_email_exist');
+
+			$email_exist = optimus_curl('POST', $url, $data);
+			if($email_exist!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($email_exist);
+		// return (array)$phone;
+		
 	}
 
-	public function json_email_exist(){
-		$isExist = $this->model_signup->is_email_exist($this->input->post('email'));
-		echo json_encode($isExist);
+	// public function get_data_participant(){
+	// 	$email 	= secure($this->input->post('email'));
+	// 	$result = $this->model_signup->get_data_participant_by_email($email);
+	// 	echo json_encode($result);
+	// }
+
+	public function api_get_data_participant(){
+		// $this->input->post('phone')
+		$data = array( 
+			'email' => $this->input->post('email'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/get_data_participant');
+
+			$participant_exist = optimus_curl('POST', $url, $data);
+			if($participant_exist!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($participant_exist);
+		// return (array)$phone;
+		
 	}
 
-	public function get_data_participant(){
-		$email 	= secure($this->input->post('email'));
-		$result = $this->model_signup->get_data_participant_by_email($email);
-		echo json_encode($result);
+	// public function json_get_data_transaksi(){
+	// 	$id 		= $this->input->post('id');
+	// 	$response 	= $this->model_signup->get_data_repayment_transaction($id);
+	// 	echo json_encode($response);
+	// }
+
+	public function api_json_get_data_transaksi(){
+		// $this->input->post('phone')
+		$data = array( 
+			'id' => $this->input->post('id'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_get_data_transaksi');
+
+			$dat_trans_json = optimus_curl('POST', $url, $data);
+			if($dat_trans_json!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($dat_trans_json);
+		// return (array)$phone;
+		
 	}
 
-	public function json_get_data_transaksi(){
-		$id 		= $this->input->post('id');
-		$response 	= $this->model_signup->get_data_repayment_transaction($id);
-		echo json_encode($response);
+	// public function json_phone_exist(){
+	// 	$phone 		= $this->input->post('phone');
+	// 	$response 	= $this->model_signup->get_data_participant_by_phone($phone);
+	// 	echo json_encode($response);
+	// }
+
+	public function api_json_phone_exist(){
+		// $this->input->post('phone')
+		$data = array( 
+			'phone' => $this->input->post('phone'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_phone_exist');
+
+			$phone_exist = optimus_curl('POST', $url, $data);
+			if($phone_exist!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($phone_exist);
+		// return (array)$phone;
+		
 	}
 
-	public function json_phone_exist(){
-		$phone 		= $this->input->post('phone');
-		$response 	= $this->model_signup->get_data_participant_by_phone($phone);
-		echo json_encode($response);
-	}
+	// public function json_get_data_event(){
+	// 	$id 		= $this->input->post('event');
+	// 	$response 	= $this->model_signup->get_data_event_by_id($id);
+	// 	echo json_encode($response);
+	// }
 
-	public function json_get_data_event(){
-		$id 		= $this->input->post('event');
-		$response 	= $this->model_signup->get_data_event_by_id($id);
-		echo json_encode($response);
+	public function api_json_get_data_event(){
+		// $this->input->post('phone')
+		$data = array( 
+			'event' => $this->input->post('event'),
+		);
+		// echo json_encode($data);
+		// die();
+		$url = api_url('user/SignupApi/json_get_data_event');
+
+			$event_json = optimus_curl('POST', $url, $data);
+			if($event_json!= ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+			// dd((array)$phone);
+		echo json_encode($event_json);
+		// return (array)$phone;
+		
 	}
 
 	// public function search_data_by_phone(){
@@ -560,53 +584,6 @@ class Signup extends CI_Controller {
 			flashdata('error', 'Gagal menambahkan data.');
 		}
 		redirect(base_url('user/signup'));
-	}
-
-
-	
-
-	public function add_repayment(){
-		$this->load->model('model_repayment');
-		if ((strpos($this->session->userdata('divisi'), 'MRLC')  !== false) || ($this->session->userdata('id') == '28') || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '155')) {
-			$divisi		= $this->db->get_where('divisi', array('departement' => 'MRLC-1'))->row_array()['id'];
-		}else{
-			$divisi 	= $this->session->userdata('iddivisi');
-		}
-		$data['list'] 			= $this->model_repayment->get_data_list_dp($divisi);
-		$data['repayment'] 		= $this->model_repayment->get_data_list_repayment($divisi);
-		$data['list_payment_type'] 	= array('EDC', 'Transfer', 'Cash', 'Others');
-		set_active_menu('Add Repayment');
-		init_view('user/content_signup_repayment', $data);
-	}
-
-	public function submit_repayment(){
-		$this->load->model('model_repayment');
-		$post 					= $this->input->post();
-		$data 					= $this->model_repayment->get_data_transaction($post['transaction_id']);
-		$post['dp'] 			= $data['paid_value'];
-		$post['timestamp'] 		= setNewDateTime();
-		$post['input_by'] 		= $this->session->userdata('id');
-		$response = $this->model_repayment->insert($post);
-		if($response){
-			$this->model_signup->update(array('is_repayment_update' => 1), $post['transaction_id']);
-			flashdata('success', 'Berhasil memasukkan data');
-		}else{
-			flashdata('error', 'Gagal mengubah data');
-		}
-		echo json_encode($response);
-	}
-
-	public function json_master_get_detail_transaction(){
-		$id 	= secure($this->input->post('id'));
-		$result = $this->model_signup->master_get_detail_transaction($id);
-		echo json_encode($result);
-	}
-
-	public function json_get_batch_list(){
-		$this->load->model('model_batch');
-		$event 		= $this->input->post('event');
-		$response 	= $this->model_batch->get_list_batch($event);
-		echo json_encode($response);
 	}
 	
 }

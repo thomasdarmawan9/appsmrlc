@@ -25,54 +25,59 @@ class Dashboard extends CI_Controller {
 
 	public function index(){
 		$data['status'] 		= array("Active", "Need to upgrade", "Graduate soon", "Dropout", "Graduated");
-		$data['regular'] 		= $this->model_periode->get_program();
-		$data['adult'] 			= $this->model_periode->get_program_adult();
-		$data['branch'] 		= $this->model_branch->get_active_branch();
-		
-		foreach($data['status'] as $key => $val){
-			$data['all'][$key]['label'] 	= $val;
-			$data['all'][$key]['value'] 	= $this->model_student->get_chart_status_student($val);
-		}
-        
-		foreach($data['branch'] as $key => $val){
-			foreach($data['status'] as $key2 => $val2){
-				$data['branch_status'][$key]['name'] = $val['branch_name'];
-				$data['branch_status'][$key]['data'][$key2]['label'] = $val2;
-				$data['branch_status'][$key]['data'][$key2]['value'] = $this->model_student->get_chart_status_student($val2, $val['branch_id']);	
-			}
-		}
-		
-		# Data Regular CLass
-		foreach($data['branch'] as $key => $val){
-			foreach($data['regular'] as $key2 => $val2){
-				foreach($data['status'] as $key3 => $val3){
-					$data['stat_regular'][$key2]['program_id'] = $val2['id'];
-					$data['stat_regular'][$key2]['program'] = $val2['name'];
-					$data['stat_regular'][$key2][$key]['name'] = $val['branch_name'];
-					$data['stat_regular'][$key2][$key]['data'][$key3]['label'] = $val3;
-					$data['stat_regular'][$key2][$key]['data'][$key3]['value'] = $this->model_student->get_chart_status_student($val3, $val['branch_id'], $val2['id'], 'regular');
-				}
-			} 
-		}
-		
-		# Data Adult Class
-		foreach($data['branch'] as $key => $val){
-			foreach($data['adult'] as $key2 => $val2){
-				foreach($data['status'] as $key3 => $val3){
-					$data['stat_adult'][$key2]['program_id'] = $val2['id'];
-					$data['stat_adult'][$key2]['program'] = $val2['name'];
-					$data['stat_adult'][$key2][$key]['name'] = $val['branch_name'];
-					$data['stat_adult'][$key2][$key]['data'][$key3]['label'] = $val3;
-					$data['stat_adult'][$key2][$key]['data'][$key3]['value'] = $this->model_student->get_chart_status_student($val3, $val['branch_id'], $val2['id'], 'adult');
-				}
-			} 
-		}
-		
-		// dd($data['stat_regular']);
+		$data['regular'] 		= $this->api_index()['regular'];
+		$data['adult'] 			= $this->api_index()['adult'];
+		$data['branch'] 		= $this->api_index();
 
+		$data['stat_regular'] 	= $this->api_index()['stat_regular'];
+		$data['stat_adult'] 	= $this->api_index()['stat_adult'];
+		$jsonstat = json_encode($data);
+		$datas = json_decode($jsonstat, true );
+
+		// dd($datas);
+		// die();
+		// dd($data['stat_regular']);
 		set_active_menu('dashboard student');
-		init_view('rc/dashboard_student', $data);
+		init_view('rc/dashboard_student', $datas);
 	}
+
+	public function api_index(){
+		$data = array(
+
+		);
+		
+		$url = api_url('rc/DashboardApi/api_get_index');
+
+			$dashboard = optimus_curl('POST', $url, $data);
+			if($dashboard != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+		// 		dd($dashboard->stat_regular);
+		// die();
+		return (array)$dashboard;
+	}
+
+	// public function api_get_chart_status_student(){
+	// 	$data = array(
+
+	// 	);
+		
+	// 	$url = api_url('rc/DashboardApi/api_get_index');
+
+	// 		$dashboard = optimus_curl('POST', $url, $data);
+	// 		if($dashboard != ""){
+	// 			$data['message'] = "Data didapatkan atas";
+	// 			$data['status'] = "200";
+	// 		}else{
+	// 			$data['status'] = "300";
+	// 		}	
+	// 	dd($dashboard);
+	// 	die();
+	// 	return (array)$dashboard;
+	// }
 
 	
 	
