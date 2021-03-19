@@ -27,7 +27,7 @@ class Dashboard extends CI_Controller {
 		$data['status'] 		= array("Active", "Need to upgrade", "Graduate soon", "Dropout", "Graduated");
 		$data['regular'] 		= $this->api_index()['regular'];
 		$data['adult'] 			= $this->api_index()['adult'];
-		$data['branch'] 		= $this->api_index();
+		$data['branch'] 		= $this->api_index()['branch'];
 
 		$data['stat_regular'] 	= $this->api_index()['stat_regular'];
 		$data['stat_adult'] 	= $this->api_index()['stat_adult'];
@@ -46,7 +46,7 @@ class Dashboard extends CI_Controller {
 
 		);
 		
-		$url = api_url('rc/DashboardApi/api_get_index');
+		$url = api_url('rc/Dashboardapi/api_get_index');
 
 			$dashboard = optimus_curl('POST', $url, $data);
 			if($dashboard != ""){
@@ -55,7 +55,7 @@ class Dashboard extends CI_Controller {
 			}else{
 				$data['status'] = "300";
 			}	
-		// 		dd($dashboard->stat_regular);
+		// dd($url);
 		// die();
 		return (array)$dashboard;
 	}

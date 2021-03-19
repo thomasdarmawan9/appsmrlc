@@ -1069,7 +1069,7 @@
 
 		if(reattendance == false && signup_method != '' && signup_method != 'Others' && event != '' && closing_type != '' && no_commision == false){
 			$.ajax({
-				url: "<?= base_url('user/signup/json_get_data_event')?>",
+				url: "<?= base_url('user/signup/api_json_get_data_event')?>",
 				type: "POST",
 				dataType: "json",
 				data:{'event': event},
@@ -1235,7 +1235,7 @@
 		var phone = $('#dad_phone').val();
 		if(phone != ''){
 			$.ajax({
-				url: "<?= base_url('user/signup/json_phone_exist')?>",
+				url: "<?= base_url('user/signup/api_json_phone_exist')?>",
 				type: "POST",
 				dataType: "json",
 				data:{'phone': phone},
@@ -1369,7 +1369,7 @@
 			success:function(result){
 				// console.log(result);
 				$.ajax({
-					url: "<?= base_url('user/signup/json_email_exist')?>",
+					url: "<?= base_url('user/signup/api_json_email_exist')?>",
 					type: "POST",
 					dataType: "json",
 					data:{'email': result.email},

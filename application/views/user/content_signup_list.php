@@ -15,10 +15,10 @@
                                 <option value="all">All</option>
                                 <?php 
                                 foreach($event as $row) {
-                                    if(strtolower($row['name']) == strtolower($this->input->get('event'))){
-                                        echo "<option value='".$row['name']."' selected>".ucfirst($row['name'])."</option>";
+                                    if(strtolower($row->name) == strtolower($this->input->get('event'))){
+                                        echo "<option value='".$row->name."' selected>".ucfirst($row->name)."</option>";
                                     }else{
-                                        echo "<option value='".$row['name']."'>".ucfirst($row['name'])."</option>";
+                                        echo "<option value='".$row->name."'>".ucfirst($row->name)."</option>";
                                     }
                                 } 
                                 ?>
@@ -44,10 +44,10 @@
                                 <option value="all">All</option>
                                 <?php 
                                 foreach($list_task as $row) {
-                                    if($row['id'] == $this->input->get('sp')){
-                                        echo "<option value='".$row['id']."' selected>".date('d-M-Y', strtotime($row['date'])).' | '.$row['event'].' | '.$row['location']."</option>";
+                                    if($row->id == $this->input->get('sp')){
+                                        echo "<option value='".$row->id."' selected>".date('d-M-Y', strtotime($row->date)).' | '.$row->event.' | '.$row->location."</option>";
                                     }else{
-                                        echo "<option value='".$row['id']."'>".date('d-M-Y', strtotime($row['date'])).' | '.$row['event'].' | '.$row['location']."</option>";
+                                        echo "<option value='".$row->id."'>".date('d-M-Y', strtotime($row->date)).' | '.$row->event.' | '.$row->location."</option>";
                                     }
                                 } 
                                 ?>
@@ -82,10 +82,10 @@
                                 <option value="all">All</option>
                                 <?php 
                                 foreach($branch as $row) {
-                                    if($row['branch_id'] == $this->input->get('branch')){
-                                        echo "<option value='".$row['branch_id']."' selected>".ucfirst($row['branch_name'])."</option>";
+                                    if($row->branch_id == $this->input->get('branch')){
+                                        echo "<option value='".$row->branch_id."' selected>".ucfirst($row->branch_name)."</option>";
                                     }else{
-                                        echo "<option value='".$row['branch_id']."'>".ucfirst($row['branch_name'])."</option>";
+                                        echo "<option value='".$row->branch_id."'>".ucfirst($row->branch_name)."</option>";
                                     }
                                 } 
                                 ?>
@@ -100,10 +100,10 @@
                                 <option value="all">All</option>
                                 <?php 
                                 foreach($class as $row) {
-                                    if($row['class_id'] == $this->input->get('class')){
-                                        echo "<option value='".$row['class_id']."' selected>".ucfirst($row['class_name'])."</option>";
+                                    if($row->class_id == $this->input->get('class')){
+                                        echo "<option value='".$row->class_id."' selected>".ucfirst($row->class_name)."</option>";
                                     }else{
-                                        echo "<option value='".$row['class_id']."'>".ucfirst($row['class_name'])."</option>";
+                                        echo "<option value='".$row->class_id."'>".ucfirst($row->class_name)."</option>";
                                     }
                                 } 
                                 ?>
@@ -154,39 +154,39 @@
                     foreach($list as $row){
                         echo "<tr style='font-size:0.9rem;'>";
                         echo "<td class='text-center'>".$no++."</td>";
-                        echo "<td>".$row['event_name']."</td>";
+                        echo "<td>".$row->event_name."</td>";
                         if(($this->session->userdata('student_privilege') == 1) || ($this->session->userdata('id') == '32')){
-                            echo "<td><label class='badge badge-light'>".$row['branch_name']." - ".$row['class_name']."</label></td>";
+                            echo "<td><label class='badge badge-light'>".$row->branch_name." - ".$row->class_name."</label></td>";
                         }
-                        echo "<td>".ucwords($row['participant_name'])."</td>";
-                        echo "<td>".$row['phone']."</td>";
-                        echo "<td>".$row['email']."</td>";
-                        echo "<td>".number_format($row['paid_value'])."</td>";
-                        if($row['is_reattendance'] == 1){
-                            echo "<td>".$row['paid_date']."<br><label class='badge badge-danger'>Re-Attendance</label></td>";
-                        }else if($row['is_upgrade'] == 1){
-                            echo "<td>".$row['paid_date']."<br><label class='badge badge-danger'>Upgrade</label></td>";
+                        echo "<td>".ucwords($row->participant_name)."</td>";
+                        echo "<td>".$row->phone."</td>";
+                        echo "<td>".$row->email."</td>";
+                        echo "<td>".number_format($row->paid_value)."</td>";
+                        if($row->is_reattendance == 1){
+                            echo "<td>".$row->paid_date."<br><label class='badge badge-danger'>Re-Attendance</label></td>";
+                        }else if($row->is_upgrade == 1){
+                            echo "<td>".$row->paid_date."<br><label class='badge badge-danger'>Upgrade</label></td>";
                         }else{
-                            echo "<td>".$row['paid_date']."</td>";
+                            echo "<td>".$row->paid_date."</td>";
                         }
-                        if(!empty($row['transfer_atas_nama'])){
-                            echo "<td>".$row['payment_type']."<br><label class='badge badge-danger'>".$row['transfer_atas_nama']."</label></td>";
+                        if(!empty($row->transfer_atas_nama)){
+                            echo "<td>".$row->payment_type."<br><label class='badge badge-danger'>".$row->transfer_atas_nama."</label></td>";
                         }else{
-                            echo "<td>".$row['payment_type']."</td>";
+                            echo "<td>".$row->payment_type."</td>";
                         }
-                        if($row['closing_type'] == "Lunas"){
-                            echo "<td><label class='badge badge-success'>".ucfirst($row['closing_type'])."</label></td>";
-                        }else if($row['closing_type'] == "DP"){
-                            echo "<td><label class='badge badge-light'>".ucfirst($row['closing_type'])."</label></td>";
-                        }else if($row['closing_type'] == "Full Program"){
-                            echo "<td><label class='badge badge-primary'>".ucfirst($row['closing_type'])."</label></td>";
+                        if($row->closing_type == "Lunas"){
+                            echo "<td><label class='badge badge-success'>".ucfirst($row->closing_type)."</label></td>";
+                        }else if($row->closing_type == "DP"){
+                            echo "<td><label class='badge badge-light'>".ucfirst($row->closing_type)."</label></td>";
+                        }else if($row->closing_type == "Full Program"){
+                            echo "<td><label class='badge badge-primary'>".ucfirst($row->closing_type)."</label></td>";
                         }else{
-                            echo "<td><label class='badge badge-warning'>".ucfirst($row['closing_type'])."</label></td>";
+                            echo "<td><label class='badge badge-warning'>".ucfirst($row->closing_type)."</label></td>";
                         }
                         // echo "<td><label class='badge badge-info'>".ucfirst($row['username'])."</label></td>";
                         // echo "<td class='text-center'><label class='badge badge-light' style='white-space:normal;'>".($row['task'])."</label></td>";
                         // echo "<td class='text-center'><label class='badge warning-color-dark'>".ucfirst($row['referral'])."</label></td>";
-                        echo "<td class='text-center'><button type='button' id='detail_trx' class='btn btn-blue-grey' onclick='detail_trx(".$row['transaction_id'].")'><i class='fa fa-info'></i></button></td>";
+                        echo "<td class='text-center'><button type='button' id='detail_trx' class='btn btn-blue-grey' onclick='detail_trx(".$row->transaction_id.")'><i class='fa fa-info'></i></button></td>";
                         echo "</tr>";
 
                     }
@@ -479,7 +479,7 @@
 
     $('#export').click(function(){
         var query   = "<?= $_SERVER['QUERY_STRING']?>";
-        var url     = "<?= base_url('user/signup/export_data_transaction?')?>"+query;
+        var url     = "<?= base_url('user/signup/api_export?')?>"+query;
         window.open(url, '_blank');
     });
 
@@ -491,7 +491,7 @@
         $('#batch').empty();
         if(event != 'all'){
             $.ajax({
-                url: "<?= base_url('user/signup/json_get_batch_list')?>",
+                url: "<?= base_url('user/signup/api_json_get_batch_list')?>",
                 type: "POST",
                 dataType: "json",
                 data:{'event': event},
@@ -526,7 +526,7 @@
         $('#modal_participant').modal('show');
         $('#form_participant').trigger('reset');
         $.ajax({
-            url: "<?= base_url('user/signup/json_master_get_detail_transaction')?>",
+            url: "<?= base_url('user/signup/api_json_master_get_detail_transaction')?>",
             type: "POST",
             dataType: "json",
             data:{'id': id},
