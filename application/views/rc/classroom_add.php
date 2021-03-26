@@ -155,7 +155,7 @@ function nonaktif(id) {
         }, function(result) {
             if (result) {
                 $.ajax({
-                    url: "<?= base_url('rc/classroom/nonaktif')?>",
+                    url: "<?= base_url('rc/classroom/api_nonaktif')?>",
                     type: "POST",
                     dataType: "json",
                     data: {
@@ -186,7 +186,7 @@ function aktif(id) {
         }, function(result) {
             if (result) {
                 $.ajax({
-                    url: "<?= base_url('rc/classroom/aktif')?>",
+                    url: "<?= base_url('rc/classroom/api_aktif')?>",
                     type: "POST",
                     dataType: "json",
                     data: {

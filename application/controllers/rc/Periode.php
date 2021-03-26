@@ -31,13 +31,10 @@ class Periode extends CI_Controller {
 	}
 
 	public function api_index(){
-		$data = array(
-
-		);
 		
 		$url = api_url('rc/Periodeapi/api_get_index');
 
-			$periode = optimus_curl('POST', $url, $data);
+			$periode = optimus_curl('GET', $url, $data = "");
 			if($periode != ""){
 				$data['message'] = "Data didapatkan atas";
 				$data['status'] = "200";
