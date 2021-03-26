@@ -225,7 +225,8 @@ if (!function_exists('flashdata')) {
 
 if (!function_exists('api_url')){
   function api_url($url = ''){
-    $client_url = 'http://apps.mri.co.id/' . $url;
+    // $client_url = 'http://apps.mri.co.id/' . $url;
+    $client_url = 'http://localhost/appsmri/' . $url;
     return $client_url;
   }
 }

@@ -161,7 +161,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/branch/nonaktif')?>",
+						url: "<?= base_url('rc/branch/api_nonaktif')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},
@@ -189,7 +189,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/branch/delete')?>",
+						url: "<?= base_url('rc/branch/api_delete')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},
@@ -217,7 +217,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/branch/aktif')?>",
+						url: "<?= base_url('rc/branch/api_aktif')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},

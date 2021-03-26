@@ -200,7 +200,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/periode/nonaktif')?>",
+						url: "<?= base_url('rc/periode/api_nonaktif')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},
@@ -228,7 +228,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/periode/aktif')?>",
+						url: "<?= base_url('rc/periode/api_aktif')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},
