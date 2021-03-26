@@ -166,7 +166,7 @@
 			}, function(result){
 				if (result) {				  
 					$.ajax({
-						url: "<?= base_url('rc/trainer/delete')?>",
+						url: "<?= base_url('rc/trainer/api_delete')?>",
 						type: "POST",
 						dataType: "json",
 						data:{'id': id},

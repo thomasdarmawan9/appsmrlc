@@ -220,16 +220,28 @@ class Trainer extends CI_Controller {
 		redirect(base_url('rc/trainer/branch/'.$post['periode_id'].'/'.$post['branch_id']));
 	}
 
-	public function delete(){
-		$id 		= $this->input->post('id');
-		$response 	= $this->model_trainer->delete($id);
-		if($response){
-			flashdata('success', 'Berhasil menghapus data');
-		}else{
-			flashdata('error', 'Gagal mengubah data');
-		}
-		echo json_encode($response);
+	public function api_delete(){
+		$data = array(
+			'id' => $this->input->post('id')
+		);
+		
+		$url = api_url('rc/Trainerapi/api_delete');
+
+			$aktif = optimus_curl('POST', $url, $data);
+			if($aktif){
+				$data['message'] = "Data dihapus";
+				$data['status'] = "200";
+				flashdata('success', 'Berhasil menghapus data');
+			}else{
+				$data['status'] = "300";
+				flashdata('error', 'Gagal mengubah data');
+			}	
+		// dd($url);
+		// die();
+		// return (array)$branch;
+		echo json_encode($aktif);
 	}
+
 
 
 	public function json_get_detail_classroom(){
