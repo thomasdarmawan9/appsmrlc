@@ -52,7 +52,7 @@ class Absensi extends CI_Controller {
 			// dd($datas);
 			// die();
 			set_active_menu('absensi');
-			init_view('rc/absensi_periode', $data);
+			init_view('rc/absensi_periode', $datas);
 		}
 	}
 

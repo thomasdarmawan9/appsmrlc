@@ -73,6 +73,52 @@
 				return (array)$manage;
 		}
 
+		public function manage_as_spv_adult(){
+			$data = array(
+				'is_spv' => $this->session->userdata('is_spv'),
+				'id' => $this->session->userdata('id'),
+				'divisi' => $this->session->userdata('divisi'),
+				'is_spv' => $this->session->userdata('is_spv'),
+				'input' => $this->input->get(),
+				'periode' => $this->input->get('periode')
+			);
+			
+			$url = api_url('rc/Studentapi/manage_as_spv_adult');
+
+				$manage = optimus_curl('POST', $url, $data);
+				if($manage){
+					$data['message'] = "Data dinonaktifkan";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+
+				return (array)$manage;
+		}
+
+		public function manage_as_trainer_adult(){
+			$data = array(
+				'is_spv' => $this->session->userdata('is_spv'),
+				'id' => $this->session->userdata('id'),
+				'divisi' => $this->session->userdata('divisi'),
+				'is_spv' => $this->session->userdata('is_spv'),
+				'input' => $this->input->get(),
+				'periode' => $this->input->get('periode')
+			);
+			
+			$url = api_url('rc/Studentapi/manage_as_trainer_adult');
+
+				$manage = optimus_curl('POST', $url, $data);
+				if($manage){
+					$data['message'] = "Data dinonaktifkan";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+
+				return (array)$manage;
+		}
+
 
 		public function manage(){
 			if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
@@ -92,7 +138,10 @@
 				$data['list_closing_class'] = array('modul', 'full program');
 				$data['list_source'] 		= array('Facebook Ads', 'WI/CI', 'Email Blast', 'Referral', 'Others');
 				$data['list_payment_type'] 	= array('EDC', 'Transfer', 'Cash', 'Others');
-				
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
+				set_active_menu('student');
+				init_view('rc/student_manage_spv', $datas);
 			}else{
 				# as trainer
 				$data['periode'] 		= $this->manage_as_trainer()['periode'] ;
@@ -102,79 +151,110 @@
 				$data['type'] 			= array("modul", "full program");
 				$data['tab'] 			= 'regular';
 				$data['list'] 			= $this->manage_as_trainer()['list'] ;
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
+				set_active_menu('student');
+				init_view('rc/student_manage', $datas);
 			}
-			$jsonstat = json_encode($data);
-			$datas = json_decode($jsonstat, true );
-			set_active_menu('student');
-			init_view('rc/student_manage', $datas);
+			
 		
 		}
 
 		public function manage_adult(){
 			if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
 				# as supervisor
-				$data['periode'] 		= $this->model_periode->get_active_periode_adult();
-				$data['list_branch'] 	= $this->model_branch->get_active_branch();
-				$data['school'] 		= $this->model_periode->get_program_adult();
-				$data['class'] 			= $this->model_classroom->get_active_class_adult();
+				$data['periode'] 		= $this->manage_as_spv()['periode'] ;
+				$data['list_branch'] 	= $this->manage_as_spv()['list_branch'] ;
+				$data['school'] 		= $this->manage_as_spv()['school'] ;
+				$data['class'] 			= $this->manage_as_spv()['class'] ;
+				$data['list'] 			= $this->manage_as_spv()['list'] ;
 				$data['status'] 		= array("Active", "Need to upgrade", "Graduate soon", "Dropout", "Graduated");
 				$data['type'] 			= array("modul", "full program");
 				$data['special'] 		= array("None", "Special Case", "Free");
 				$data['tab'] 			= 'adult';
 
-				$data['list_warrior'] 		= $this->model_signup->get_list_warrior();
+				$data['list_warrior'] 		= $this->manage_as_spv()['list_warrior'] ;
 				$data['list_signup_type']	= array('SP', 'PTM', 'Others');
 				$data['list_closing_class'] = array('modul', 'full program');
 				$data['list_source'] 		= array('Facebook Ads', 'WI/CI', 'Email Blast', 'Referral', 'Others');
 				$data['list_payment_type'] 	= array('EDC', 'Transfer', 'Cash', 'Others');
-				if(!empty($this->input->get())){
-					if($this->input->get('periode') != 'all'){
-						$periode			= $this->model_periode->get_data($this->input->get('periode'));
-					}else{
-						$periode['periode_start_date'] = '';
-						$periode['periode_end_date'] = '';
-					}
-					$data['list'] 		= $this->model_student->get_filtered_student($this->input->get(), $periode['periode_start_date'], $periode['periode_end_date'], 'adult');
-				}else{
-					$data['list'] 		= array();
-				}
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
 				set_active_menu('student');
-				init_view('rc/student_manage_adult_spv', $data);
+				init_view('rc/student_manage_adult_spv', $datas);
 			}else{
 				# as trainer
-				$data['periode'] 		= $this->model_periode->get_active_periode_adult();
-				$data['school'] 		= $this->model_periode->get_program_adult();
-				$data['class'] 			= $this->model_classroom->get_active_class_adult();
+				$data['periode'] 		= $this->manage_as_trainer()['periode'] ;
+				$data['school'] 		= $this->manage_as_trainer()['school'] ;
+				$data['class'] 			= $this->manage_as_trainer()['class'] ;
 				$data['status'] 		= array("Active", "Need to upgrade", "Graduate soon", "Dropout", "Graduated");
 				$data['type'] 			= array("modul", "full program");
 				$data['tab'] 			= 'adult';
-				if(!empty($this->input->get())){
-					if($this->input->get('periode') != 'all'){
-						$periode			= $this->model_periode->get_data($this->input->get('periode'));
-					}else{
-						$periode['periode_start_date'] = '';
-						$periode['periode_end_date'] = '';
-					}
-					$data['list'] 		= $this->model_student->get_filtered_student($this->input->get(), $periode['periode_start_date'], $periode['periode_end_date'], 'adult');
-				}else{
-					$data['list'] 		= array();
-				}
+				$data['list'] 			= $this->manage_as_trainer()['list'] ;
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
 				set_active_menu('student');
-				init_view('rc/student_manage_adult', $data);
+				init_view('rc/student_manage_adult', $datas);
 			}
+		
 		}
+
+		public function submission_api_spv(){
+			$data = array(
+				'is_spv' => $this->session->userdata('is_spv'),
+				'id' => $this->session->userdata('id'),
+				'divisi' => $this->session->userdata('divisi')
+			);
+			
+			$url = api_url('rc/Studentapi/submission_spv');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data dinonaktifkan";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+
+				return (array)$subm;
+		}
+
+		public function submission_api_trainer(){
+			$data = array(
+				'is_spv' => $this->session->userdata('is_spv'),
+				'id' => $this->session->userdata('id'),
+				'divisi' => $this->session->userdata('divisi')
+			);
+			
+			$url = api_url('rc/Studentapi/submission_trainer');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data dinonaktifkan";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+
+				return (array)$subm;
+		}
+
 
 		public function submission(){
 			if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
 				# as supervisor
-				$data['list'] = $this->model_student->get_data_submission_waiting();
+				$data['list'] = $this->submission_api_spv();
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
 				set_active_menu('submission');
-				init_view('rc/student_submission_spv', $data);
+				init_view('rc/student_submission_spv', $datas);
 			}else{
 				# as trainer
-				$data['list'] = $this->model_student->get_data_submission($this->session->userdata('id'));
+				$data['list'] = $this->submission_api_trainer();
+				$jsonstat = json_encode($data);
+				$datas = json_decode($jsonstat, true );
 				set_active_menu('submission');
-				init_view('rc/student_submission', $data);
+				init_view('rc/student_submission', $datas);
 			}
 		}
 
