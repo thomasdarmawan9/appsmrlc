@@ -25,6 +25,28 @@ class Absensi extends CI_Controller {
 			display_404();
 		}
 	}
+	
+	public function api_index(){
+		$data = array(
+			'is_spv' => $this->session->userdata('is_spv'),
+			'divisi' => $this->session->userdata('divisi'),
+			'id' => $this->session->userdata('id'),
+			'get' => $this->input->get()
+		);
+		
+		$url = api_url('rc/Absensiapi/api_get_absensi');
+
+			$absen = optimus_curl('POST', $url, $data);
+			if($absen != ""){
+				$data['message'] = "Data didapatkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+		// dd($url);
+		// die();
+		return (array)$absen;
+	}
 
 	public function index(){
 		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
@@ -56,15 +78,15 @@ class Absensi extends CI_Controller {
 		}
 	}
 
-	public function api_index(){
+	public function api_index_adult(){
 		$data = array(
 			'is_spv' => $this->session->userdata('is_spv'),
 			'divisi' => $this->session->userdata('divisi'),
 			'id' => $this->session->userdata('id'),
-			'id' => $this->input->get()
+			'get' => $this->input->get()
 		);
 		
-		$url = api_url('rc/Absensiapi/api_get_absensi');
+		$url = api_url('rc/Absensiapi/api_get_absensi_adult');
 
 			$absen = optimus_curl('POST', $url, $data);
 			if($absen != ""){
@@ -81,28 +103,32 @@ class Absensi extends CI_Controller {
 	public function adult(){
 		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
 			# as supervisor
-			$data['periode'] 	= $this->model_periode->get_active_periode_adult();
-			$data['branch'] 	= $this->model_branch->get_active_branch();
-			$data['school'] 	= $this->model_periode->get_program_adult();
-			$data['class'] 		= $this->model_classroom->get_active_class_adult();
+			$data['periode'] 	= $this->api_index_adult()['periode'];
+			$data['branch'] 	= $this->api_index_adult()['branch'];
+			$data['school'] 	= $this->api_index_adult()['school'];
+			$data['class'] 		= $this->api_index_adult()['class'];
 			$data['tab'] 		= 'adult';
 			if(!empty($this->input->get())){
-				$data['absen'] 	= $this->model_absensi->get_list_class_spv($this->input->get(), 'adult');
-				$data['rekap'] 	= $this->model_absensi->get_rekap_absen_spv($this->input->get(), 'adult');
+				$data['absen'] 	= $this->api_index_adult()['absen'];
+				$data['rekap'] 	= $this->api_index_adult()['rekap'];
 			}else{
 				$data['absen'] 	= array();
-				$data['rekap'] 	= $this->model_absensi->get_rekap_absen_spv('', 'adult');				
+				$data['rekap'] 	= $this->api_index_adult()['rekap'];				
 			}
+			$jsonindex = json_encode($data);
+			$datas = json_decode($jsonindex, true );
 			// dd($data['rekap']);
 			set_active_menu('absensi');
-			init_view('rc/absensi_periode_adult_spv', $data);
+			init_view('rc/absensi_periode_adult_spv', $datas);
 		}else{
 			# as trainer
-			$data['periode'] 	= $this->model_periode->get_active_periode_trainer($this->session->userdata('id'), 'adult');
-			$data['branch'] 	= $this->model_branch->get_branch_trainer($this->session->userdata('id'));
+			$data['periode'] 	= $this->api_index_adult();
+			$data['branch'] 	= $this->api_index_adult();
 			$data['tab'] 		= 'adult';
+			$jsonindex = json_encode($data);
+			$datas = json_decode($jsonindex, true );
 			set_active_menu('absensi');
-			init_view('rc/absensi_periode_adult', $data);
+			init_view('rc/absensi_periode_adult', $datas);
 		}
 	}
 
