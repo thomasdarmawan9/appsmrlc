@@ -132,14 +132,35 @@ class Absensi extends CI_Controller {
 		}
 	}
 
+	public function api_periode($periode, $branch = null){
+		$data = array(
+			'id' => $this->session->userdata('id')
+		);
+		
+		$url = api_url('rc/Absensiapi/periode/'.$periode.'/'.$branch);
+
+			$absen = optimus_curl('POST', $url, $data);
+			if($absen != ""){
+				$data['message'] = "Data didapatkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+		// dd($url);
+		// die();
+		return (array)$absen;
+	}
+
 	public function periode($periode, $branch = null){
-		$data['class'] 		= $this->model_absensi->get_list_class($periode, $branch, $this->session->userdata('id'));
-		$data['periode'] 	= $this->model_periode->get_data($data['class'][0]['periode_id']);
-		$data['branch'] 	= $this->model_branch->get_data($branch);
-		$data['rekap'] 		= $this->model_absensi->get_rekap_absen($periode, $branch);
+		$data['class'] 		= $this->api_periode($periode, $branch)['class'] ;
+		$data['periode'] 	= $this->api_periode($periode, $branch)['periode'];
+		$data['branch'] 	= $this->api_periode($branch)['branch'];
+		$data['rekap'] 		= $this->api_periode($periode, $branch)['rekap'] ;
 		// dd($data);
+		$jsonindex = json_encode($data);
+		$datas = json_decode($jsonindex, true );
 		set_active_menu('absensi');
-		init_view('rc/absensi_program', $data);
+		init_view('rc/absensi_program', $datas);
 	}
 
 	public function export($class_id){
