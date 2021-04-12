@@ -5,12 +5,12 @@ class Absensi extends CI_Controller {
 	
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('model_trainer');
-		$this->load->model('model_periode');
-		$this->load->model('model_branch');
-		$this->load->model('model_classroom');
-		$this->load->model('model_absensi');
-		$this->load->model('model_student');
+		// $this->load->model('model_trainer');
+		// $this->load->model('model_periode');
+		// $this->load->model('model_branch');
+		// $this->load->model('model_classroom');
+		// $this->load->model('model_absensi');
+		// $this->load->model('model_student');
 	} 
 	
 	public function _remap($method, $param = array()){
@@ -235,71 +235,74 @@ class Absensi extends CI_Controller {
 		redirect(base_url('rc/trainer/branch/'.$post['periode_id'].'/'.$post['branch_id']));
 	}
 
+	public function sesi_as_spv($class, $sesi){
+		$data = array(
+			'is_spv' => $this->session->userdata('is_spv'),
+			'id' => $this->session->userdata('id'),
+			'divisi' => $this->session->userdata('divisi'),
+		);
+		
+		$url = api_url('rc/Absensiapi/sesi_as_spv/'.$class.'/'.$sesi);
+
+			$manage = optimus_curl('POST', $url, $data);
+			if($manage){
+				$data['message'] = "Data dinonaktifkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+
+			return (array)$manage;
+	}
+
+	public function sesi_as_trainer($class, $sesi){
+		$data = array(
+			'is_spv' => $this->session->userdata('is_spv'),
+			'id' => $this->session->userdata('id'),
+			'divisi' => $this->session->userdata('divisi'),
+		);
+		
+		$url = api_url('rc/Absensiapi/sesi_as_trainer/'.$class.'/'.$sesi);
+
+			$manage = optimus_curl('POST', $url, $data);
+			if($manage){
+				$data['message'] = "Data dinonaktifkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+
+			return (array)$manage;
+	}
+
 	public function sesi($class, $sesi){
 		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
 			# as supervisor
 			$data['url'] 		= $_SERVER['QUERY_STRING'];
 			$data['sesi'] 		= $sesi;
-			$data['class'] 		= $this->model_trainer->get_data($class);
-			$data['periode'] 	= $this->model_periode->get_periode_by_detail($data['class']['periode_detail_id']);
-			$data['student'] 	= $this->model_absensi->get_student_class($data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $data['periode']['periode_start_date'], $data['periode']['periode_end_date']);
-			$data['absen'] 		= $this->model_absensi->get_list_absen($data['class']['periode_detail_id'], $data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $sesi);
-			$data['rekap'] 		= $this->model_absensi->get_list_absen_rekap($data['class']['periode_detail_id'], $data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $sesi);
+			$data['class'] 		= $this->sesi_as_spv($class, $sesi)['class'];
+			$data['periode'] 	= $this->sesi_as_spv($class, $sesi)['periode'];
+			$data['student'] 	= $this->sesi_as_spv($class, $sesi)['student'];
+			$data['absen'] 		= $this->sesi_as_spv($class, $sesi)['absen'];
+			$data['rekap'] 		= $this->sesi_as_spv($class, $sesi)['rekap'];
+		
 			
-			if($data['class']['is_adult_class'] == 0){
-				$data['filter']['branch'] 	= $this->model_branch->get_active_branch();
-				$data['filter']['class'] 	= $this->model_classroom->get_active_class();
-			}else{	
-				$data['filter']['branch'] 	= $this->model_branch->get_active_branch();
-				$data['filter']['class'] 	= $this->model_classroom->get_active_class_adult();
-			}
-			
-			if(empty($data['rekap'])){
-				$data['rekap']['periode_detail_id'] = $data['class']['periode_detail_id'];
-				$data['rekap']['branch_id'] 		= $data['class']['branch_id'];
-				$data['rekap']['program_id'] 		= $data['class']['program_id'];
-				$data['rekap']['class_id'] 			= $data['class']['class_id'];
-				$data['rekap']['session']			= $sesi;
-			}
-
-			$attendance = 0;
-			$other = 0;
-			foreach($data['absen'] as $row){
-				if($row['is_attend'] == 1 && $row['is_change'] == 0){
-					$attendance++;
-				}
-				if($row['is_change'] == 1 && $row['change_to'] == 0){
-					$other++;
-				}
-			}
-			$data['attendance'] = $attendance;
-			$data['other'] 		= $other;
+			$data['attendance'] = $this->sesi_as_spv($class, $sesi);
+			$data['other'] 		= $this->sesi_as_spv($class, $sesi);
 			$data['trainer_class'] 	= $class;
+			$jsonstat = json_encode($data);
+			$datas = json_decode($jsonstat, true );
 			set_active_menu('absensi');
-			init_view('rc/absensi_class_spv', $data);
+			init_view('rc/absensi_class_spv', $datas);
 		}else{
 			# as trainer
 			$data['sesi'] 		= $sesi;
-			$data['class'] 		= $this->model_trainer->get_data($class);
-			$data['periode'] 	= $this->model_periode->get_periode_by_detail($data['class']['periode_detail_id']);
-			$data['student'] 	= $this->model_absensi->get_student_class($data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $data['periode']['periode_start_date'], $data['periode']['periode_end_date']);
-			$data['absen'] 		= $this->model_absensi->get_list_absen($data['class']['periode_detail_id'], $data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $sesi);
-			$data['rekap'] 		= $this->model_absensi->get_list_absen_rekap($data['class']['periode_detail_id'], $data['class']['branch_id'], $data['class']['program_id'], $data['class']['class_id'], $sesi);
+			$data['class'] 		= $this->sesi_as_trainer($class, $sesi)['class'];
+			$data['periode'] 	= $this->sesi_as_trainer($class, $sesi)['periode'];
+			$data['student'] 	= $this->sesi_as_trainer($class, $sesi)['student'];
+			$data['absen'] 		= $this->sesi_as_trainer($class, $sesi)['absen'];
+			$data['rekap'] 		= $this->sesi_as_trainer($class, $sesi)['rekap'];
 			// dd($data['absen']);
-			if($data['class']['is_adult_class'] == 0){
-				$data['filter']['branch'] 	= $this->model_branch->get_active_branch();
-				$data['filter']['class'] 	= $this->model_classroom->get_active_class();
-			}else{	
-				$data['filter']['branch'] 	= $this->model_branch->get_active_branch();
-				$data['filter']['class'] 	= $this->model_classroom->get_active_class_adult();
-			}
-			if(empty($data['rekap'])){
-				$data['rekap']['periode_detail_id'] = $data['class']['periode_detail_id'];
-				$data['rekap']['branch_id'] 		= $data['class']['branch_id'];
-				$data['rekap']['program_id'] 		= $data['class']['program_id'];
-				$data['rekap']['class_id'] 			= $data['class']['class_id'];
-				$data['rekap']['session']			= $sesi;
-			}
 			
 			$attendance = 0;
 			$other = 0;
@@ -321,35 +324,54 @@ class Absensi extends CI_Controller {
 
 	}
 
-	public function add_presence(){
-		$url 						= $this->input->post('url');
-		$post['trainer_class_id'] 	= $this->input->post('trainer_class_id');
-		$post['attend'] 			= $this->input->post('attend');
-		$post['sesi'] 				= $this->input->post('sesi');
-		$post['student_id'] 		= $this->input->post('student_id');
-		$detail_class 				= $this->model_trainer->get_data($post['trainer_class_id']);
-		foreach($post['attend'] as $key => $val){
-			$insert = array(
-				'periode_detail_id' => $detail_class['periode_detail_id'],
-				'branch_id' 		=> $detail_class['branch_id'],
-				'program_id' 		=> $detail_class['program_id'],
-				'class_id' 			=> $detail_class['class_id'],
-				'student_id' 		=> $post['student_id'][$key],
-				'session' 			=> $post['sesi'],
-				'is_attend' 		=> $val,
-				'input_by' 			=> $this->session->userdata('id'),
-				'timestamp' 		=> setNewDateTime()
-					);
-			$result = $this->model_absensi->insert($insert);
-		}
-		if($result){
-			$this->model_trainer->update(array('last_session' => $post['sesi']), $post['trainer_class_id']);
-			flashdata('success', 'Berhasil menambahkan data');
-		}else{
-			flashdata('error', 'Gagal menambahkan data');
-		}
+	public function api_presence(){
+		$data = array(
+			'url' => $this->input->post('url'),
+			'trainer_class_id' =>  $this->input->post('trainer_class_id'),
+			'attend' =>  $this->input->post('attend'),
+			'sesi' =>  $this->input->post('sesi'),
+			'student_id' =>  $this->input->post('student_id')
+		);
+		
+		$url = api_url('rc/Absensiapi/api_post_presence');
 
-		redirect(base_url('rc/absensi/sesi/'.$post['trainer_class_id'].'/'.$post['sesi'].'?'.$url));
+			$absen = optimus_curl('POST', $url, $data);
+			if($absen != ""){
+				$data['message'] = "Data didapatkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+
+			return (array)$absen;
+	}
+
+	public function add_presence(){
+		$data = array(
+			'url' => $this->input->post('url'),
+			'trainer_class_id' =>  $this->input->post('trainer_class_id'),
+			'attend' =>  $this->input->post('attend'),
+			'sesi' =>  $this->input->post('sesi'),
+			'student_id' =>  $this->input->post('student_id')
+		);
+		
+		$url = api_url('rc/Absensiapi/api_post_presence');
+
+			$absen = optimus_curl('POST', $url, $data);
+			if($absen != ""){
+				$data['message'] = "Data didapatkan";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}	
+		
+			if($absen){
+				$this->api_presence();
+				flashdata('success', 'Berhasil menambahkan data');
+			}else{
+				flashdata('error', 'Gagal menambahkan data');
+			}
+		redirect(base_url('rc/absensi/sesi/'.$this->input->post('trainer_class_id').'/'.$this->input->post('sesi').'?'.$url));
 	}
 
 	public function submit_rekap(){

@@ -243,14 +243,14 @@
 		public function submission(){
 			if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
 				# as supervisor
-				$data['list'] = $this->submission_api_spv();
+				$data['list'] = $this->submission_api_spv()['list'] ;
 				$jsonstat = json_encode($data);
 				$datas = json_decode($jsonstat, true );
 				set_active_menu('submission');
 				init_view('rc/student_submission_spv', $datas);
 			}else{
 				# as trainer
-				$data['list'] = $this->submission_api_trainer();
+				$data['list'] = $this->submission_api_trainer()['list'] ;
 				$jsonstat = json_encode($data);
 				$datas = json_decode($jsonstat, true );
 				set_active_menu('submission');
@@ -258,27 +258,92 @@
 			}
 		}
 
-		public function submission_add(){
-			$data['periode'] 		= $this->model_periode->get_active_periode();
-			$data['branch'] 		= $this->model_branch->get_branch_trainer($this->session->userdata('id'));
-			$data['list_branch'] 	= $this->model_branch->get_active_branch();
-			$data['school'] 		= $this->model_periode->get_program();
-			$data['class'] 			= $this->model_classroom->get_active_class();
-			if(!empty($this->input->get())){
-				if($this->input->get('periode') != ''){
-					$periode 			= $this->model_periode->get_data($this->input->get('periode'));
-					// dd($periode);
-					$data['list'] 		= $this->model_student->get_student_list($periode['periode_start_date'], $periode['periode_end_date'], $this->input->get('branch'), $this->input->get('school'), $this->input->get('class'), 'regular');
-				}else{
-					$data['list'] 		= $this->model_student->get_student_list('','', $this->input->get('branch'), $this->input->get('school'), $this->input->get('class'), 'regular');
-				}
-			}else{
-				$data['list'] 		= array();
-			}
+		public function submission_add_api(){
+			$data = array(
+				'get' => $this->input->get(),
+				'id' => $this->session->userdata('id'),
+				'periode' => $this->input->get('periode'),
+				'branch' => $this->input->get('branch'),
+				'school' => $this->input->get('school'),
+				'class' => $this->input->get('class')
+			);
 			
-	// 		var_dump($data['branch']);
+			$url = api_url('rc/Studentapi/submission_add');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
+		public function submission_add(){
+			$data['periode'] 		= $this->submission_add_api();
+			$data['branch'] 		= $this->submission_add_api();
+			$data['list_branch'] 	= $this->submission_add_api();
+			$data['school'] 		= $this->submission_add_api();
+			$data['class'] 			= $this->submission_add_api();
+			$data['list'] 			= $this->submission_add_api();
+			$jsonstat = json_encode($data);
+			$datas = json_decode($jsonstat, true);
+			$data['periode'] 		= $datas['periode']['periode'];
+			$data['branch'] 		= $datas['periode']['branch'];
+			$data['list_branch'] 	= $datas['periode']['list_branch'];
+			$data['school'] 		= $datas['periode']['school'];
+			$data['class'] 			= $datas['periode']['class'];
+			$data['list'] 			= $datas['periode']['list'];
+			// dd($datas['periode']['list_branch']);
+			// die();
 			set_active_menu('submission');
 			init_view('rc/student_submission_add', $data);
+		}
+
+		public function submission_add_api_adult(){
+			$data = array(
+				'get' => $this->input->get(),
+				'id' => $this->session->userdata('id'),
+				'periode' => $this->input->get('periode'),
+				'branch' => $this->input->get('branch'),
+				'school' => $this->input->get('school'),
+				'class' => $this->input->get('class')
+			);
+			
+			$url = api_url('rc/Studentapi/submission_adult_add');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
+		public function submission_add_adult(){
+			$data['periode'] 		= $this->submission_add_api_adult();
+			$data['branch'] 		= $this->submission_add_api_adult();
+			$data['list_branch'] 	= $this->submission_add_api_adult();
+			$data['school'] 		= $this->submission_add_api_adult();
+			$data['class'] 			= $this->submission_add_api_adult();
+			$data['list'] 			= $this->submission_add_api_adult();
+			$jsonstat = json_encode($data);
+			$datas = json_decode($jsonstat, true);
+			$data['periode'] 		= $datas['periode']['periode'];
+			$data['branch'] 		= $datas['periode']['branch'];
+			$data['list_branch'] 	= $datas['periode']['list_branch'];
+			$data['school'] 		= $datas['periode']['school'];
+			$data['class'] 			= $datas['periode']['class'];
+			$data['list'] 			= $datas['periode']['list'];
+			// dd($datas['periode']['list_branch']);
+			// die();
+			set_active_menu('submission');
+			init_view('rc/student_submission_adult_add', $data);
 		}
 
 		public function submission_adult_add(){
@@ -302,50 +367,69 @@
 			init_view('rc/student_submission_adult_add', $data);
 		}
 
+		public function change_student_api(){
+			$data = array(
+				'ch_branch_to' => $this->input->post('ch_branch_to'),
+				'ch_program_to' => $this->input->post('ch_program_to'),
+				'ch_class_to' => $this->input->post('ch_class_to'),
+				'ch_student_id' => $this->input->post('ch_student_id'),
+				'ch_periode_id' => $this->input->post('ch_periode_id'),
+				'ch_periode_id' => $this->input->post('ch_program_from'),
+				'ch_class_from' => $this->input->post('ch_class_from'),
+			);
+			
+			$url = api_url('rc/Studentapi/change_student');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
 		public function change_student(){
-			$post 		= $this->input->post();
-			$update_student = array(
-								'branch_id' => $post['ch_branch_to'],
-								'program_id' => $post['ch_program_to'],
-								'class_id' => $post['ch_class_to'],
-								);
-			$result1 		= $this->model_student->update($update_student, $post['ch_student_id']);
-			$periode_detail_id = $this->model_periode->get_periode_detail_id($post['ch_periode_id'], $post['ch_program_from'])['periode_detail_id'];
-			$update_absen 	= array(
-								'branch_id' => $post['ch_branch_to'],
-								'program_id' => $post['ch_program_to'],
-								'class_id' => $post['ch_class_to'],
-								);
-			$where_absen 	= array(
-								'branch_id' => $post['ch_branch_from'],
-								'program_id' => $post['ch_program_from'],
-								'class_id' => $post['ch_class_from'],
-								'periode_detail_id' => $periode_detail_id,
-								'student_id' => $post['ch_student_id'],
-								);
-			$response 		= $this->model_student->update_absen($update_absen, $where_absen);
+			
+			$response 		= $this->change_student_api();
 			if($response){
 				flashdata('success', 'Berhasil mengubah data');
 			}else{
 				flashdata('error', 'Gagal mengubah data');
 			}
-			redirect(base_url('rc/student/manage?'.$post['ch_redirect']));
+			redirect(base_url('rc/student/manage?'.$this->input->post('ch_redirect')));
+		}
+
+		public function submission_submit_api(){
+			$data = array(
+				'student_id' => $this->input->post('student_id'),
+				'periode_id' => $this->input->post('periode_id'),
+				'program_from' => $this->input->post('program_from'),
+				'branch_from' => $this->input->post('branch_from'),
+				'class_from' => $this->input->post('class_from'),
+				'branch_to' => $this->input->post('branch_to'),
+				'program_to' => $this->input->post('program_to'),
+				'class_to' => $this->input->post('class_to'),
+				'id' => $this->session->userdata('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/submission_submit');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
 		}
 
 		public function submission_submit(){
-			$post 		= $this->input->post();
-			$insert['student_id'] 			= $post['student_id'];
-			$insert['periode_detail_id'] 	= $this->model_periode->get_periode_detail_id($post['periode_id'], $post['program_from'])['periode_detail_id'];
-			$insert['branch_from'] 			= $post['branch_from'];
-			$insert['program_from']			= $post['program_from'];
-			$insert['class_from']			= $post['class_from'];
-			$insert['branch_to']			= $post['branch_to'];
-			$insert['program_to']			= $post['program_to'];
-			$insert['class_to']				= $post['class_to'];
-			$insert['change_status']		= 'waiting';
-			$insert['input_by']				= $this->session->userdata('id');
-			$insert['timestamp'] 			= setNewDateTime();
-			$result = $this->model_student->insert_submission($insert);
+			$result = $this->submission_submit_api();
 			if($result){
 				flashdata('success', 'Berhasil menambahkan data pengajuan');
 			}else{
@@ -355,70 +439,49 @@
 			redirect(base_url('rc/student/submission'));
 		}
 
+		public function submit_edit_form_api(){
+			$data = array(
+				'dad_id' => $this->input->post('dad_id'),
+				'dad_name' => $this->input->post('dad_name'),
+				'dad_email' => $this->input->post('dad_email'),
+				'dad_phone' => $this->input->post('dad_phone'),
+				'dad_job' => $this->input->post('dad_job'),
+				'mom_id' => $this->input->post('mom_id'),
+				'mom_name' => $this->input->post('mom_name'),
+				'mom_email' => $this->input->post('mom_email'),
+				'mom_phone' => $this->input->post('mom_phone'),
+				'mom_job' => $this->input->post('mom_job'),
+				'participant_name' => $this->input->post('participant_name'),
+				'gender' => $this->input->post('gender'),
+				'phone' => $this->input->post('phone'),
+				'email' => $this->input->post('email'),
+				'birthdate' => $this->input->post('birthdate'),
+				'program_type' => $this->input->post('program_type'),
+				'start_date' => $this->input->post('start_date'),
+				'end_date' => $this->input->post('end_date'),
+				'special_status' => $this->input->post('special_status'),
+				'special_note' => $this->input->post('special_note'),
+				'participant_id' => $this->input->post('participant_id'),
+				'student_id' => $this->input->post('student_id'),
+			);
+			
+			$url = api_url('rc/Studentapi/submit_edit_form');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
 		public function submit_edit_form(){
 			$post = $this->input->post();
-			if(!empty($post['dad_id'])){
-				# jika data ayah tersedia di database
-				$participant['dad_id'] 			= $post['dad_id'];
-				$dad['participant_name']		= $post['dad_name'];
-				$dad['email'] 					= $post['dad_email'];
-				$dad['phone'] 					= $post['dad_phone'];
-				$dad['job'] 					= $post['dad_job'];
-				$dad['gender'] 					= 'L';
-				$dad['date_created']			= setNewDateTime();
-				$this->model_signup->update_participant($dad, $participant['dad_id']);
-			}else if(!empty($post['dad_phone'])){
-				# data baru ayah
-				$dad['participant_name']		= $post['dad_name'];
-				$dad['email'] 					= $post['dad_email'];
-				$dad['phone'] 					= $post['dad_phone'];
-				$dad['job'] 					= $post['dad_job'];
-				$dad['gender'] 					= 'L';
-				$dad['date_created']			= setNewDateTime();
-				$participant['dad_id'] 			= $this->model_signup->insert_participant($dad);
-			}else{
-				$participant['dad_id'] 			= "";
-			}
-
-			if(!empty($post['mom_id'])){
-				# jika data ibu tersedia di database
-				$participant['mom_id'] 			= $post['mom_id'];
-				$mom['participant_name']		= $post['mom_name'];
-				$mom['email'] 					= $post['mom_email'];
-				$mom['phone'] 					= $post['mom_phone'];
-				$mom['job'] 					= $post['mom_job'];
-				$mom['gender'] 					= 'P';
-				$mom['date_created']			= setNewDateTime();
-				$this->model_signup->update_participant($mom, $participant['mom_id']);		
-			}else if(!empty($post['mom_phone'])){
-				# data baru ibu
-				$mom['participant_name']		= $post['mom_name'];
-				$mom['email'] 					= $post['mom_email'];
-				$mom['phone'] 					= $post['mom_phone'];
-				$mom['job'] 					= $post['mom_job'];
-				$mom['gender'] 					= 'P';
-				$mom['date_created']			= setNewDateTime();
-				$participant['mom_id'] 			= $this->model_signup->insert_participant($mom);
-			}else{
-				$participant['mom_id'] 			= "";
-			}
-			$participant['participant_name'] 	= $post['participant_name'];
-			$participant['gender'] 				= $post['gender'];
-			$participant['phone'] 				= $post['phone'];
-			$participant['email'] 				= $post['email'];
-			$participant['birthdate'] 			= $post['birthdate'];
-			$student['program_type'] 			= $post['program_type']; 
-			$student['start_date'] 				= $post['start_date'];
-			$student['end_date'] 				= $post['end_date'];
-			if(!empty($post['special_status'])){
-				$student['special_status'] 			= $post['special_status'];
-			}
-			if(!empty($post['special_note'])){
-				$student['special_note'] 			= $post['special_note'];
-			}
-			$result1 = $this->model_signup->update_participant($participant, $post['participant_id']);
-			$result2 = $this->model_student->update($student, $post['student_id']);
-			if($result1 && $result2){
+			$result = $this->submit_edit_form_api();
+			if($result){
 				flashdata('success', 'Berhasil mengubah data');
 			}else{
 				flashdata('error', 'Gagal mengubah data');
@@ -426,9 +489,26 @@
 			redirect(base_url('rc/student/manage?'.$post['redirect']));
 		}
 
+		public function delete_submission_api(){
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/delete_submission');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
 		public function delete_submission(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->delete_submission($id);
+			$response	= $this->delete_submission_api();
 			if($response){
 				flashdata('success', 'Berhasil menghapus data');
 			}else{
@@ -437,30 +517,26 @@
 			echo json_encode($response);
 		}
 
-		public function approve_submission(){
-			$id 			= $this->input->post('id');
-			$detail 		= $this->model_student->get_data_submission_by($id);
-			$update_student = array(
-								'branch_id' => $detail['branch_to'],
-								'program_id' => $detail['program_to'],
-								'class_id' => $detail['class_to'],
-								);
-			$result1 		= $this->model_student->update($update_student, $detail['student_id']);
+		public function approve_submission_api(){
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/approve_submission');
 
-			$update_absen 	= array(
-								'branch_id' => $detail['branch_to'],
-								'program_id' => $detail['program_to'],
-								'class_id' => $detail['class_to'],
-								);
-			$where_absen 	= array(
-								'branch_id' => $detail['branch_from'],
-								'program_id' => $detail['program_from'],
-								'class_id' => $detail['class_from'],
-								'periode_detail_id' => $detail['periode_detail_id'],
-								'student_id' => $detail['student_id'],
-								);
-			$result2 		= $this->model_student->update_absen($update_absen, $where_absen);
-			$response	= $this->model_student->update_submission(array('change_status' => 'approved'), $id);
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
+		public function approve_submission(){
+			$response	= $this->approve_submission_api();
 			if($response){
 				flashdata('success', 'Berhasil mengubah data');
 			}else{
@@ -469,74 +545,46 @@
 			echo json_encode($response);
 		}
 
+		public function submit_upgrade_student_api(){
+			$data = array(
+				'post' => $this->input->post(),
+				'student_id' => $this->input->post('student_id'),
+				'program_id' => $this->input->post('program_id'),
+				'program' => $this->input->post('program'),
+				'price' => $this->input->post('price'),
+				'signup_type' => $this->input->post('signup_type'),
+				'source' => $this->input->post('source'),
+				'payment_type' => $this->input->post('payment_type'),
+				'atas_nama' => $this->input->post('atas_nama'),
+				'paid_value' => $this->input->post('paid_value'),
+				'paid_date' => $this->input->post('paid_date'),
+				'closing_type' => $this->input->post('closing_type'),
+				'remark' => $this->input->post('remark'),
+				'modul_class' => $this->input->post('modul_class'),
+				'full_program_startdate' => $this->input->post('full_program_startdate'),
+				'full_program_enddate' => $this->input->post('full_program_enddate'),
+				'branch_id' => $this->input->post('branch_id'),
+				'class_id' => $this->input->post('class_id'),
+				'id_user_closing' => $this->input->post('id_user_closing'),
+				'id' => $this->session->userdata('id')
+			);
+			
+			$url = api_url('rc/Studentapi/submit_upgrade_student');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
 		public function submit_upgrade_student(){
 			$post = $this->input->post();
-			$detail = $this->model_student->get_data($post['student_id']);
-			$event  = $this->model_signup->get_data_event_by_id($detail['program_id']);
-
-			if($post['closing_type'] == 'Modul'){
-				$transaction['participant_id'] 			= $detail['participant_id'];
-				$transaction['event_id'] 				= $detail['program_id'];
-				$transaction['event_name'] 				= $post['program'];
-				$transaction['event_price'] 			= $event['price'];
-				$transaction['signup_type'] 			= $post['signup_type'];
-				$transaction['source'] 					= $post['source'];
-				$transaction['payment_type'] 			= $post['payment_type'];
-				$transaction['transfer_atas_nama'] 		= $post['atas_nama'];
-				$transaction['paid_value'] 				= $post['paid_value'];
-				$transaction['paid_date'] 				= $post['paid_date'];
-				$transaction['closing_type'] 			= $post['closing_type'];
-				$transaction['remark'] 					= $post['remark'];
-				$transaction['class_modul'] 			= $post['modul_class'];
-				$transaction['full_program_startdate'] 	= $post['full_program_startdate'];
-				$transaction['full_program_enddate'] 	= $post['full_program_enddate'];
-				$transaction['branch_id'] 				= $detail['branch_id'];
-				$transaction['class_id'] 				= $detail['class_id'];
-				$transaction['sales_id'] 				= $post['id_user_closing'];
-				$transaction['department_id'] 			= $this->db->get_where('divisi', array('departement' => 'MRLC 1'))->row_array()['id'];
-				$transaction['input_by'] 				= $this->session->userdata('id');
-				$transaction['timestamp'] 				= setNewDateTime();
-				$result = $this->model_signup->insert_transaction($transaction);	
-				$student['participant_id'] 		= $detail['participant_id'];
-				$student['program_id'] 			= $detail['program_id'];
-				$student['branch_id'] 			= $detail['branch_id'];
-				$student['class_id'] 			= $detail['class_id'];
-				$student['program_type'] 		= $transaction['closing_type'];
-				$student['start_date'] 			= $transaction['full_program_startdate'];
-				$student['end_date'] 			= $transaction['full_program_enddate'];
-				$student['student_status'] 		= 'active';
-				$result2 = $this->model_student->insert($student);
-				$this->model_student->update(array('upgrade_to_newmodul' => 1), $post['student_id']);
-			}else{
-				$transaction['participant_id'] 			= $detail['participant_id'];
-				$transaction['event_id'] 				= $detail['program_id'];
-				$transaction['event_name'] 				= $post['program'];
-				$transaction['event_price'] 			= $event['price'];
-				$transaction['signup_type'] 			= $post['signup_type'];
-				$transaction['source'] 					= $post['source'];
-				$transaction['payment_type'] 			= $post['payment_type'];
-				$transaction['transfer_atas_nama'] 		= $post['atas_nama'];
-				$transaction['paid_value'] 				= $post['paid_value'];
-				$transaction['paid_date'] 				= $post['paid_date'];
-				$transaction['closing_type'] 			= $post['closing_type'];
-				$transaction['remark'] 					= $post['remark'];
-				$transaction['class_modul'] 			= $post['modul_class'];
-				$transaction['full_program_startdate'] 	= $detail['start_date'];
-				$transaction['full_program_enddate'] 	= $post['full_program_enddate'];
-				$transaction['branch_id'] 				= $detail['branch_id'];
-				$transaction['class_id'] 				= $detail['class_id'];
-				$transaction['sales_id'] 				= $post['id_user_closing'];
-				$transaction['department_id'] 			= $this->db->get_where('divisi', array('departement' => 'MRLC 1'))->row_array()['id'];
-				$transaction['input_by'] 				= $this->session->userdata('id');
-				$transaction['timestamp'] 				= setNewDateTime();
-				$transaction['is_upgrade'] 				= 1;
-				$result = $this->model_signup->insert_transaction($transaction);	
-
-				$student['program_type'] 		= $transaction['closing_type'];
-				$student['end_date'] 			= $transaction['full_program_enddate'];
-				$student['student_status'] 		= 'active';
-				$result2 = $this->model_student->update($student, $post['student_id']);
-			}
+			$result2 = $this->submit_upgrade_student_api();
 			if($result2){
 				flashdata('success', 'Berhasil mengubah data');
 			}else{
@@ -560,11 +608,27 @@
 			exportToExcel($data, 'Sheet 1', $filename);
 		}
 
+		public function delete_student_api(){
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/delete_student');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
+
 		public function delete_student(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->delete($id);
+			$response	= $this->delete_student_api();
 			if($response){
-				$this->model_absensi->delete_by_student($id);
 				flashdata('success', 'Berhasil menghapus data');
 			}else{
 				flashdata('error', 'Gagal mengubah data');
@@ -572,10 +636,26 @@
 			echo json_encode($response);
 		}
 
+		public function reject_submission_api(){
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/reject_submission');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+				return $subm;
+		}
 
 		public function reject_submission(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->update_submission(array('change_status' => 'rejected'), $id);
+			$response	= $this->reject_submission_api();
 			if($response){
 				flashdata('success', 'Berhasil mengubah data');
 			}else{
@@ -585,15 +665,39 @@
 		}
 
 		public function json_get_detail_student(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->get_data($id);
-			echo json_encode($response);
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/json_get_detail_student');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+			echo json_encode($subm);
 		}
 
 		public function json_get_detail_student_upgrade(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->get_data_student_upgrade($id);
-			echo json_encode($response);
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/json_get_detail_student_upgrade');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+			echo json_encode($subm);
 		}
 
 		public function json_remove_trainer(){
