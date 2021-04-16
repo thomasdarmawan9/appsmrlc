@@ -22,18 +22,53 @@ class Task extends CI_Controller {
 		}
 	}
 
+	public function api_index(){
+		$url = api_url('support/Taskapi/api_index');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'iddivisi' => $this->session->userdata('iddivisi'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
+
 	public function index(){
-		$data['results'] = $this->model_task->get_task();
-		$data['divisi'] = $this->model_task->get_divisi();
-		
-// 		$data['get_branch'] = $this->model_task->get_all_branch();
-// 		$data['get_event'] = $this->model_task->get_all_event();
+		$data['results'] = $this->api_index()['results'];
+		$data['divisi'] = $this->api_index()['divisi'];
+		// $jsonstat = json_encode($data);
+		// $datas = json_decode($jsonstat, true );
+
+		// dd($data);
+		// die();
 		set_active_menu('Future Task Support');
 		init_view('support/content_get_task', $data);
 	}
 
+	public function api_index_all(){
+		$url = api_url('support/Taskapi/all');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'iddivisi' => $this->session->userdata('iddivisi'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
+
 	public function all(){
-		$data['results'] = $this->model_task->get_alltask();
+		$data['results'] = $this->api_index_all()['results'];
+		
 		set_active_menu('Last Task Support');
 		init_view('support/content_get_alltask', $data);
 		// $this->load->view('content_get_alltask.php',$data);
@@ -44,39 +79,90 @@ class Task extends CI_Controller {
 		init_view('support/content_add_task');
 	}
 
+	public function addtaskwarrior_api($id){
+		$url = api_url('support/Taskapi/addtaskwarrior/'.$id);
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'iddivisi' => $this->session->userdata('iddivisi'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
+
+	public function hasil_api(){
+		$url = api_url('support/Taskapi/addtaskwarriors');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'is_hr_division' => $this->session->userdata('is_hr_division'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
+
 	public function addtaskwarrior($id){
-		$data['results'] 	= $this->model_task->get_select_task($id)[0];
-		$data['hasil'] 		= $this->model_login->getusername();
+		$data['results'] 	= $this->addtaskwarrior_api($id)['results'];
+		$data['hasil'] 		= $this->hasil_api()['hasil'];
+		
 		set_active_menu('Add Task Warrior');
 		init_view('support/content_add_war_event', $data);
 	}
 
+	public function tambah_war_task_api(){
+		$url = api_url('support/Taskapi/tambah_war_task');
+		$data = array(
+			'id' => $this->input->post('id'),
+			'getname' => $this->input->post('getname'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
 
 	public function tambah_war_task(){
-		$id_task 			= $this->input->post('id');
-		$name['getname'] 	= $this->input->post('getname');
-		
-		foreach ($name['getname'] as $nm){
-			$results = $this->model_task->tambah_war_task($id_task, $nm);
-		}
-		
+		$results = $this->tambah_war_task_api();
 		if($results){
 			flashdata('success','Warriors berhasil dimasukan kedalam Event');
 		}else{
 			flashdata('error','Gagal menambahkan warriors kedalam Event');
 		}
 		redirect(base_url('support/task/'));
+	}
+
+	public function pay_war_task_api(){
+		$url = api_url('support/Taskapi/pay_war_task');
+		$data = array(
+			'id' => $this->input->post('id'),
+			'getname' => $this->input->post('getname'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
 	}
 
 	public function pay_war_task(){
-
-		$id_task 			= $this->input->post('id');
-		$name['getname'] 	= $this->input->post('getname');
-		
-		foreach ($name['getname'] as $nm){
-			$results = $this->model_task->pay_war_task($id_task, $nm);
-		}
-
+		$results = $this->tambah_war_task_api();
 		if($results){
 			flashdata('success','Warriors berhasil dimasukan kedalam Event');
 		}else{
@@ -85,33 +171,47 @@ class Task extends CI_Controller {
 		redirect(base_url('support/task/'));
 	}
 
+	public function submit_api(){
+		$url = api_url('support/Taskapi/submit');
+		$data = array(
+			'id' => $this->input->post('id'),
+			'nama' => $this->input->post('nama'),
+			'location' => $this->input->post('location'),
+			'lokasi' => $this->input->post('lokasi'),
+			'tgl' => $this->input->post('tgl'),
+			'komisilunas' => $this->input->post('komisilunas'),
+			'komisidp' => $this->input->post('komisidp'),
+			'id_divisi' => $this->input->post('id_divisi'),
+			'iddivisi' => $this->session->userdata('iddivisi'),
+			'username' => $this->session->userdata('username'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+
+			echo json_encode($data);
+			// die();
+	}
+
 	public function submit(){
-		$id 			= $this->input->post('id');
-		$nama 			= $this->input->post('nama');
-		$location 		= $this->input->post('location');
-		$lokasi         = $this->input->post('lokasi');
-		$date 			= $this->input->post('tgl');
-		$komisi_lunas 	= $this->input->post('komisilunas');
-		$komisi_dp 		= $this->input->post('komisidp');
-		if($this->session->userdata('username') == 'taskadmin'){
-			$id_divisi 		= $this->input->post('id_divisi');
-		}else{
-			$id_divisi 		= $this->session->userdata('iddivisi');
-		}
-		$jenis_report 	= 'peserta';
+		$id =  $this->input->post('id');
 		if(empty($id)){
 			# insert statement
-			$results = $this->model_task->tambah_task($nama, $location, $date, $jenis_report, $komisi_lunas, $komisi_dp, $id_divisi,$lokasi);
+			$results = $this->submit_api();
 
-			if($results){
+			if($results !== ""){
 				flashdata('success','Event ditambahkan di List');
 			}else{
 				flashdata('error','Gagal menambahkan data');
 			}
 		}else{
 			# update statement
-			$results = $this->model_task->edit_task($id, $nama, $location, $date, $jenis_report, $komisi_dp, $komisi_lunas, $id_divisi,$lokasi);
-			if($results){
+			$results = $this->submit_api();
+			if($results !== ""){
 				flashdata('success','Berhasil mengubah data');
 			}else{
 				flashdata('error','Gagal mengubah data');
@@ -120,46 +220,23 @@ class Task extends CI_Controller {
 		redirect(base_url('support/task/'));
 	}
 
-//     public function submit(){
-// 		$id 			= $this->input->post('id');
-// 		$nama 			= $this->input->post('nama');
-// 		$location 		= $this->input->post('location');
-// 		$lokasi			= $this->input->post('lokasi');
-// 		$date 			= $this->input->post('tgl');
-// 		$komisi_lunas 	= $this->input->post('komisilunas');
-// 		$komisi_dp 		= $this->input->post('komisidp');
-		
-// 		if($this->session->userdata('username') == 'taskadmin'){
-// 			$id_divisi 		= $this->input->post('id_divisi');
-// 		}else{
-// 			$id_divisi 		= $this->session->userdata('iddivisi');
-// 		}
-// 		$username		= $this->session->userdata('taskadmin');
-// 		$jenis_report 	= 'peserta';
-// 		if(empty($id)){
-// 			# insert statement
-// 			$results = $this->model_task->tambah_task($nama, $location, $date, $jenis_report, $komisi_lunas, $komisi_dp,$id_divisi,$lokasi,$username);
-
-// 			if($results){
-// 				flashdata('success','Event ditambahkan di List');
-// 			}else{
-// 				flashdata('error','Gagal menambahkan data');
-// 			}
-// 		}else{
-// 			# update statement
-// 			$results = $this->model_task->edit_task($id, $nama, $location, $date, $jenis_report, $komisi_dp, $komisi_lunas,$id_divisi,$lokasi,$username);
-// 			if($results){
-// 				flashdata('success','Berhasil mengubah data');
-// 			}else{
-// 				flashdata('error','Gagal mengubah data');
-// 			}
-// 		}
-// 		redirect(base_url('support/task/'));
-// 	}
+	public function delete_api(){
+		$url = api_url('support/Taskapi/delete');
+		$data = array(
+			'id' => $this->input->post('id'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
 
 	public function delete(){
-		$id 		= $this->input->post('id');
-		$results 	= $this->model_task->delete_task($id);
+		$results 	= $this->delete_api();
 
 		if($results){
 			$this->session->set_flashdata('success','Berhasil menghapus data.');
@@ -168,11 +245,26 @@ class Task extends CI_Controller {
 		}
 		echo json_encode($results);
 	}
+	
+	public function delete_wartask_api(){
+		$url = api_url('support/Taskapi/delete_wartask');
+		$data = array(
+			'id_task' => $this->input->post('id_task'),
+			'id_user' => $this->input->post('id_user'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
 
 	public function delete_wartask(){
 		$id_task = $this->input->post('id_task');
-		$id_user = $this->input->post('id_user');
-		$response = $this->model_task->delete_wartask($id_task, $id_user);
+		$response = $this->delete_wartask_api();
 		if($response){
 			flashdata('success','Warriors berhasil dihapus dari event');
 		}else{
@@ -182,10 +274,25 @@ class Task extends CI_Controller {
 		echo json_encode($response);			
 	}
 
+	public function submit_pd_api(){
+		$url = api_url('support/Taskapi/submit_pd');
+		$data = array(
+			'id' => $this->input->post('id'),
+			'getpd' => $this->input->post('getpd'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		return (array)$task;
+	}
+
+
 	public function submit_pd(){
-		$id_task 	= $this->input->post('id');
-		$username 	= $this->input->post('getpd');
-		$results 	= $this->model_task->getpd($id_task, $username);
+		$results 	= $this->submit_pd_api();
 		
 		if($results){
 			flashdata('success','PD berhasil ditentukan.');
@@ -308,8 +415,21 @@ class Task extends CI_Controller {
 		init_view('support/content_overviewtask', $data);
 	}
 
+	public function list_incentive_api(){
+		$url = api_url('support/Taskapi/list_incentive');
+		
+			$task = optimus_curl('GET', $url, $data="");
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		echo json_encode($task);
+	}
+
 	public function list_incentive(){
-		$data['results'] = $this->model_task->get_all_incentive_list();
+		$data['results'] = $this->list_incentive_api()['results'];
 		set_active_menu('List Incentive');
 		init_view('support/content_list_incentive_sp', $data);
 	}
@@ -341,15 +461,38 @@ class Task extends CI_Controller {
 	}
 
 	public function json_get_data_event(){
-		$id 		= $this->input->post('id');
-		$response 	= $this->model_task->getidtask_get($id)[0];
-		echo json_encode($response);
+		$url = api_url('support/Taskapi/json_get_data_event');
+		$data = array(
+			'id' => $this->input->post('id'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		echo json_encode($task);
+	}
+
+	public function json_get_data_task_api(){
+		$url = api_url('support/Taskapi/json_get_data_task');
+		$data = array(
+			'id' => $this->input->post('id'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		echo json_encode($task);
 	}
 
 	public function json_get_data_task(){
-		$id 				= $this->input->post('id');
-		$response['event'] 	= $this->model_task->get_select_task($id)[0];
-		$response['list']	= $this->model_task->getusername_task($id);
+		$response['event'] 	= $this->json_get_data_task_api()[0];
+		$response['list']	= $this->json_get_data_task_api();
 		echo json_encode($response);
 	}
 

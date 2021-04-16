@@ -701,26 +701,62 @@
 		}
 
 		public function json_remove_trainer(){
-			$id 		= $this->input->post('id');
-			$response 	= $this->model_branch->update_branch_trainer($id, 0);
-			if($response){
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/json_remove_trainer');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+			if($subm){
 				flashdata('success', 'Berhasil menghapus data');
 			}else{
 				flashdata('error', 'Gagal mengubah data');
 			}
-			echo json_encode($response);
+			echo json_encode($subm);
 		}
 
 		public function json_get_history_trx(){
-			$id 		= $this->input->post('id');
-			$response	= $this->model_student->get_history_trx($id);
-			echo json_encode($response);
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/json_get_history_trx');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+			echo json_encode($subm);
 		}
 
 		public function json_get_data_participant_by_id(){
-			$id 	= secure($this->input->post('id'));
-			$result = $this->model_student->get_data_student_detail($id);
-			echo json_encode($result);
+			$data = array(
+				'id' => $this->input->post('id'),
+			);
+			
+			$url = api_url('rc/Studentapi/json_get_data_participant_by_id');
+
+				$subm = optimus_curl('POST', $url, $data);
+				if($subm){
+					$data['message'] = "Data berhasil diubah";
+					$data['status'] = "200";
+				}else{
+					$data['status'] = "300";
+				}	
+			
+			echo json_encode($subm);
 		}
 		
 	}
