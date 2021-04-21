@@ -22,12 +22,29 @@ class Task extends CI_Controller {
 		}
 	}
 
+	public function index_api(){
+		$url = api_url('user/Taskapi/index');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'is_hr_division' => $this->session->userdata('is_hr_division'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function index(){
-		$data['results'] 	= $this->model_task->get_mytask();
-		$data['hasil'] 		= $this->model_login->getusername();
-		$data['minus'] 		= $this->model_task->get_minus_event();
-		$data['plus'] 		= $this->model_task->get_plus_event();
-		
+		$data['results'] 	= $this->index_api()['results'];
+		$data['hasil'] 		= $this->index_api()['hasil'];
+		$data['minus'] 		= $this->index_api()['minus'];
+		$data['plus'] 		= $this->index_api()['plus'];
 		$minus = 0;
 		if($data['minus']){
 			foreach($data['minus'] as $m){
@@ -47,34 +64,107 @@ class Task extends CI_Controller {
 		$hasil = $plus - $minus;
 		
 		$data['sp'] = $hasil;
+		// dd($data);
+		// die();
 		set_active_menu('My Task');
 		init_view('user/content_mytask', $data);
 	}
 
+	public function request_api(){
+		$url = api_url('user/Taskapi/request');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'is_hr_division' => $this->session->userdata('is_hr_division'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function request(){
-		$data['results'] 	= $this->model_task->get_request_task();
-		$data['hasil'] 		= $this->model_login->getusername();
+		$data['results'] 	= $this->request_api()['results'];
+		$data['hasil'] 		= $this->request_api()['hasil'];
 		set_active_menu('Request Task');
 		init_view('user/content_permohonan_task', $data);
 	}
 
+	public function submission_api(){
+		$url = api_url('user/Taskapi/submission');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'is_hr_division' => $this->session->userdata('is_hr_division'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function submission(){
-		$data['results'] 	= $this->model_task->get_submission_task();
-		$data['hasil'] 		= $this->model_login->getusername();
+		$data['results'] 	= $this->submission_api()['results'];
+		$data['hasil'] 		= $this->submission_api()['hasil'];
 		set_active_menu('Submission Task');
 		init_view('user/content_pengajuan_task', $data);
 	}
 
+	public function all_api(){
+		$url = api_url('user/Taskapi/all');
+		$data = array(
+			'id' => $this->session->userdata('id'),
+			'is_hr_division' => $this->session->userdata('is_hr_division'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function all(){
-		$data['results'] 	= $this->model_task->get_all_mytask();
-		$data['hasil'] 		= $this->model_login->getusername();
+		$data['results'] 	= $this->all_api()['results'];
+		$data['hasil'] 		= $this->all_api()['hasil'];
 		set_active_menu('All Task');
 		init_view('user/content_all_task', $data);
 	}
 
+	public function batalkan_pertukaran_api(){
+		$url = api_url('user/Taskapi/batalkan_pertukaran');
+		$data = array(
+			'idevent' => $this->input->post('idevent')
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function batalkan_pertukaran($idevent, $token){
 		if($token == md5($idevent)){
-			$results = $this->model_task->batalkan_pertukaran($idevent);
+			$results = $this->batalkan_pertukaran_api();
 			
 			if($results){
 				flashdata('success','Berhasil dibatalkan');
@@ -88,79 +178,75 @@ class Task extends CI_Controller {
 		redirect(base_url('user/task'));
 	}
 
+	public function event_digantikan_api(){
+		$url = api_url('user/Taskapi/event_digantikan');
+		$data = array(
+			'idevent' => $this->input->post('idevent'),
+			'getname' => $this->input->post('getname'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
+	public function event_digantikan_request_api(){
+		$url = api_url('user/Taskapi/event_digantikan_request');
+		$data = array(
+			'idevent' => $this->input->post('idevent'),
+			'getname' => $this->input->post('getname'),
+		);
+			$task = optimus_curl('POST', $url, $data);
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function event_digantikan(){
-		$idevent =  $this->input->post('idevent');
-		$getname = $this->input->post('getname');
-		$results = $this->model_task->event_digantikan_cek($idevent, $getname);
+		$results = $this->event_digantikan_api();
 		
-		if($results){
-		  	//Cek user tidak sedang menggantikan / tidak ada request
-			$results1 = $this->model_task->event_digantikan_request($idevent,$getname);
-
-			if($results1){
-
-				$results2 = $this->model_task->event_digantikan($idevent,$getname);
-
-				$hs['user'] = $this->model_login->getuser_person($getname);			  		
-
-				foreach($hs['user'] as $r){
-					$hp = $r->no_hp;
-				}
-
-				$nama = ucfirst($this->session->userdata('username'));
-				$id_user = $this->session->userdata('id');
-
-				$hsl['task'] = $this->model_task->get_event($idevent, $id_user);
-
-				foreach($hsl['task'] as $tsk){
-					$event = $tsk->event;
-					$lokasi = $tsk->location;
-					$tgl = date("d-M-Y", strtotime($tsk->date));
-
-					if($tsk->tugas == null){
-						$tugas = "Tunggu Info Pd";
-					}else{
-						$tugas = $tsk->tugas;
-					}
-				}
-
-				//Send Confirmation
-				$token ="9289c10816467ec0a42430fd6add1e0a59fe3975b265b";
-				$uid = "6281280539070";
-				$t = time();$unik =$t.rand(10,100);
-				$to = $hp;
-				$pesan = urlencode("*Ada Permintaan Pergantian EVENT* \nEvent : $event, \nTanggal : $tgl,\nTugas : $tugas, \nOleh : $nama ");
-
-				$ch = curl_init(); 
-				curl_setopt($ch, CURLOPT_URL, "https://www.waboxapp.com/api/send/chat"); 
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); 
-				curl_setopt($ch, CURLOPT_POST, 1); 
-				curl_setopt($ch, CURLOPT_POSTFIELDS, 'token='.$token.'&uid='.$uid.'&to='.$to.'&custom_uid='.$t.'&text='.$pesan.''); 
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
-				curl_setopt($ch, CURLOPT_MAXREDIRS, 5); 
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-				curl_setopt($ch, CURLOPT_TIMEOUT, 20); 
-				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25); 
-
-				$response = curl_exec($ch); 
-					//$info = curl_getinfo($ch); 
-					//echo $response;
-				curl_close ($ch);
- 					//End Confirmation
-
+		if($results !== ""){
+			$results1 = $this->event_digantikan_request_api();
+			if($results1 !== ""){
 				flashdata('success','Event telah berhasil di request');
 			}else{
 				flashdata('error','Request gagal diproses, user sudah terdapat di Event Ini.');
 			}
 		}else{
-			flashdata('error','Maaf, User sudah menggantikan orang lain / di Request orang lain.');
+			flashdata('error','Maaf, User sudah menggantikan orang lain / di Request orang lain.'); 
 		}
 		redirect(base_url('user/task'));
 	}
 
+	public function approve_request_api($idtask, $idpengganti){
+		$url = api_url('user/Taskapi/approve_request/'.$idtask.'/'.$idpengganti);
+	
+			$task = optimus_curl('GET', $url, $data = "");
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function approve_request($idpengganti, $idtask){
-		$results = $this->model_task->approve_request_task($idtask, $idpengganti);
+		$results = $this->approve_request_api($idtask, $idpengganti);
 		
 		if($results){
 			flashdata('success','List Event telah ditambahkan kedalam List');
@@ -171,49 +257,26 @@ class Task extends CI_Controller {
 		redirect(base_url('user/task/request'));
 	}
 
+	public function reject_konfirmasi_pertukaran_api($idevent){
+		$url = api_url('user/Taskapi/reject_konfirmasi_pertukaran/'.$idevent);
+	
+			$task = optimus_curl('POST', $url, $data = "");
+			if($task != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$task;
+	}
+
 	public function reject_konfirmasi_pertukaran($idevent, $token){
 		if($token == md5($idevent)){
-			$results = $this->model_task->reject_konfirmasi_pertukaran($idevent);
+			$results = $this->reject_konfirmasi_pertukaran_api($idevent);
 			
 			if($results){
-				$data['results'] = $this->model_task->get_user_mail($idevent);
-				
-				foreach ( $data['results'] as $r ){
-					$email = $r->email;
-				}
-				//Email Notification he/her get cuti
-				$pesan = '<html><body>Maaf request pengajuan pergantian Task Allocation Anda ditolak.</body></html>';
-				
-				$to = $email;
-				$subject = 'Request Task Allocation Anda ditolak';
-				$body_html = $pesan;
-				$from = 'support@pediahost.com';
-				$fromName = 'Merry Riana Indonesia';
-				$res = "";
-
-				$data = "username=".urlencode("andy@pediahost.com");
-				$data .= "&api_key=".urlencode("fb4317fa-0fde-46e4-8510-2d6cfabf6413");
-				$data .= "&from=".urlencode($from);
-				$data .= "&from_name=".urlencode($fromName);
-				$data .= "&to=".urlencode($to);
-				$data .= "&subject=".urlencode($subject);
-				if($body_html)
-					$data .= "&body_html=".urlencode($body_html);
-
-				$header = "POST /mailer/send HTTP/1.0\r\n";
-				$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-				$header .= "Content-Length: " . strlen($data) . "\r\n\r\n";
-				$fp = fsockopen('ssl://api.elasticemail.com', 443, $errno, $errstr, 30);
-
-				if(!$fp)
-					return "ERROR. Could not open connection";
-				else {
-					fputs ($fp, $header.$data);
-					while (!feof($fp)) {
-						$res .= fread ($fp, 1024);
-					}
-					fclose($fp);
-				}
 				flashdata('success','Sukses mengubah data');
 			}else{
 				flashdata('error','Gagal mengubah data');
