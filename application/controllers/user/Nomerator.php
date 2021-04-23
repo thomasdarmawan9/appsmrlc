@@ -25,14 +25,32 @@ class Nomerator extends CI_Controller
 		} else {
 			display_404();
 		}
-    }
-    
+	}
+	
+	public function api_index(){
+		$url = api_url('user/Nomeratorapi/index');
+		$data = array(
+			'id' => $this->session->userdata('id')
+		);
+			$nomerator = optimus_curl('POST', $url, $data);
+			if($nomerator != ""){
+				$data['message'] = "Data didapatkan atas";
+				$data['status'] = "200";
+			}else{
+				$data['status'] = "300";
+			}
+		// dd($task);
+		// die();
+		return (array)$nomerator;
+	}
+	
     public function index(){
-        $data['results']    = $this->Model_finance->get_nomerator();
-	    $data['program']    = $this->Model_finance->get_programtt();
-	    $data['branch']     = $this->Model_finance->get_active_branch();
-		$data['hp_branch']  = $this->Model_finance->get_hp_branch();
-
+        $data['results']    = $this->api_index()['results'];
+	    $data['program']    = $this->api_index()['program'];
+	    $data['branch']     = $this->api_index()['branch'];
+		$data['hp_branch']  = $this->api_index()['hp_branch'];
+		// dd($data);
+		// die();
         set_active_menu('Add Nomerator');
         init_view('user/content_nomerator', $data);
     }
@@ -279,4 +297,5 @@ class Nomerator extends CI_Controller
 		echo json_encode($results);
 	}
 }
+
 ?>

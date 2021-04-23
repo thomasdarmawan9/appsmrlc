@@ -16,7 +16,7 @@ class Absensi extends CI_Controller {
 	public function _remap($method, $param = array()){
 		if(method_exists($this, $method)){
 			$level = $this->session->userdata('level');
-			if(!empty($level) && (strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128'))){
+			if(!empty($level) && (strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == 32) || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128') || ($this->session->userdata('id') == '267'))){
 				return call_user_func_array(array($this, $method), $param);
 			}else{
 				redirect(base_url('login'));				
@@ -49,7 +49,7 @@ class Absensi extends CI_Controller {
 	}
 
 	public function index(){
-		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
+		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128') || ($this->session->userdata('id') == '267')){
 			# as supervisor
 			$data['periode'] 	= $this->api_index()['periode'];
 			$data['branch'] 	= $this->api_index()['branch'];
@@ -101,7 +101,7 @@ class Absensi extends CI_Controller {
 	}
 
 	public function adult(){
-		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
+		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128') || ($this->session->userdata('id') == '267')){
 			# as supervisor
 			$data['periode'] 	= $this->api_index_adult()['periode'];
 			$data['branch'] 	= $this->api_index_adult()['branch'];
@@ -117,13 +117,14 @@ class Absensi extends CI_Controller {
 			}
 			$jsonindex = json_encode($data);
 			$datas = json_decode($jsonindex, true );
-			// dd($data['rekap']);
+			// dd($datas);
+			// die();
 			set_active_menu('absensi');
 			init_view('rc/absensi_periode_adult_spv', $datas);
 		}else{
 			# as trainer
-			$data['periode'] 	= $this->api_index_adult();
-			$data['branch'] 	= $this->api_index_adult();
+			$data['periode'] 	= $this->api_index_adult()['periode'];
+			$data['branch'] 	= $this->api_index_adult()['branch'];
 			$data['tab'] 		= 'adult';
 			$jsonindex = json_encode($data);
 			$datas = json_decode($jsonindex, true );
@@ -276,7 +277,7 @@ class Absensi extends CI_Controller {
 	}
 
 	public function sesi($class, $sesi){
-		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128')){
+		if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || ($this->session->userdata('id') == '32') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72') || ($this->session->userdata('id') == '128') || ($this->session->userdata('id') == '267')){
 			# as supervisor
 			$data['url'] 		= $_SERVER['QUERY_STRING'];
 			$data['sesi'] 		= $sesi;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>Warrior Application</title>
+  <title>Warrior MRLC</title>
 
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="<?= base_url(); ?>inc/mdb/css/mdb.min.css">
@@ -32,7 +32,7 @@
 			  <p class="text-white">Supported By <img src="<?php echo base_url(); ?>inc/image/chrome.png" style="width: 100px;border-radius: 10px;"></p>
 			</div>
 		  </div>
-        
+			<form role="form" class="login-form">
         <div id="form-login">
             <div class="form-signin mt-4">
         		  <div class="form-label-group">
@@ -48,6 +48,7 @@
         		  <button class="btn btn-lg red btn-block" id="btn-submit" onclick="check_data()" type="submit">Sign in</button>
     		</div>
 		 </div>
+			</form>
 		 
 		 <div id="form-forgetpass" style="display:none;">
 		     <form role="form" action="<?php echo base_url(); ?>login/send_changepasslink" method="post" class="form-signin mt-4">

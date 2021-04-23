@@ -45,7 +45,7 @@
 					<a href="<?= base_url('user/signup')?>">Add Signup </a>
 				</li>
 				<?php 
-					if($this->session->userdata('student_privilege') == 0 || $this->session->userdata('id') == '190' || $this->session->userdata('id') == '72' || $this->session->userdata('id') == '128'){ 
+					if($this->session->userdata('student_privilege') == 0 || $this->session->userdata('id') == '190' || $this->session->userdata('id') == '72' || $this->session->userdata('id') == '128' || $this->session->userdata('id') == '267'){ 
 					?>
 					<li class="<?= (!empty($active) && $active == 'Add Repayment')? 'active':'';?>"> 
 						<a href="<?= base_url('user/signup/add_repayment')?>">Add Pembayaran DP</a>
@@ -61,7 +61,19 @@
 		</li>
 		<?php } ?>
 		
-		<?php if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || $this->session->userdata('id') == 32 || $this->session->userdata('id') == 128){ ?>
+		<!-- Menu Apps Numerator -->
+		<?php if($this->session->userdata('level') != 'finance' && ($this->session->userdata('iddivisi') != '4') || ($this->session->userdata('iddivisi') != '42') || ($this->session->userdata('id') == '190') || ($this->session->userdata('id') == '72')){ ?>
+			<li>
+				<a href="#menu99" data-toggle="collapse" aria-expanded="false"><i class="fa fa-list-alt"></i>&nbsp Nomerator</a>
+				<ul class="collapse list-unstyled" id="menu99">
+					<li class="<?= (!empty($active) && $active == 'Add Nomerator') ? 'active' : ''; ?>">
+						<a href="<?= base_url('user/nomerator'); ?>">&nbsp Add Nomerator</a>
+					</li>
+				</ul>
+			</li>
+		<?php } ?>
+		
+		<?php if($this->session->userdata('is_spv') == true && strpos($this->session->userdata('divisi'), 'MRLC') !== false || $this->session->userdata('id') == 32 || $this->session->userdata('id') == 128 || $this->session->userdata('id') == 267 ){?>
 		<li>
 			<a href="#menu_rc" data-toggle="collapse" aria-expanded="false"><i class="fa fa-clone"></i>&nbsp Regular Class</a>
 			<ul class="collapse list-unstyled" id="menu_rc">
@@ -103,7 +115,7 @@
 			</ul>
 		</li>
 		
-		<?php if($this->session->userdata('is_spv') == false && $this->session->userdata('id') != '128' && strpos($this->session->userdata('divisi'), 'MRLC') !== false){ ?>
+		<?php if($this->session->userdata('is_spv') == false && $this->session->userdata('id') != '128' && $this->session->userdata('id') != '267' && strpos($this->session->userdata('divisi'), 'MRLC') !== false){ ?>
 			<li>
 			<a href="#menu_trainer" data-toggle="collapse" aria-expanded="false"><i class="fa fa-clone"></i>&nbsp Regular Class</a>
 			<ul class="collapse list-unstyled" id="menu_trainer">
