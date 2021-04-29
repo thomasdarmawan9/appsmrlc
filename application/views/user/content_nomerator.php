@@ -101,7 +101,6 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form action="<?= base_url('user/nomerator/submit_form_nomerator') ?>" method="post" id="form_data" class="form-horizontal" style="width:100%">
-                <input type="text" id="branch" name="branch" value="<?php echo $this->session->userdata('branch') ?>" hidden>
                 <div class="modal-header" style="background-color: #33b5e5">
                     <h4 class="modal-title" id="myModalLabel" style="color:honeydew"><b>List Nomerator</b></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -215,6 +214,12 @@
                             </select>
                         </div>
                     </div>
+
+				<?php if($this->session->userdata('branch') == 0 && $this->session->userdata('id') == 169){ ?>
+						<input type="text" id="branch" name="branch" value="7" hidden>
+				<?php }else{ ?>
+					<input type="text" id="branch" name="branch" value="<?php echo $this->session->userdata('branch') ?>" hidden>
+				<?php }?>
 
                     <div class="" id="std_coloumn_type">
                         <div class="form-group row" id="std_show_type">
@@ -461,15 +466,17 @@
         var program = $('#program').val();
         var is_branch = $('#branch').val();
         if ((program == '1') || (program == '26')) {
-            document.getElementById('bank').value = 'BCA MRI';
-        } else if ((program == '4') || (program == '5') || (program == '3') || (program == '19')) {
-            document.getElementById('bank').value = 'BCA MRM';
-        } else if (((program == '2') || (program == '10') || (program == '11') || (program == '24')) && is_branch == '5') {
-            document.getElementById('bank').value = 'BCA Palem';
-        } else if (((program == '2') || (program == '10') || (program == '11') || (program == '24')) && is_branch == '6') {
-            document.getElementById('bank').value = 'BCA BW';
-        } else {
-            document.getElementById('bank').value = 'BCA MRE';
+            document.getElementById('bank').value = 'BCA PT MRI';
+        } else if (program == 4 || program == 5 || program == 3 || program == 19) {
+            document.getElementById('bank').value = 'BCA PT MRM';
+        } else if ((program == 2 || program == 10 || program == 11 || program == 24) && is_branch == '5') {
+            document.getElementById('bank').value = 'BCA PT MRE Dua (Palem)';
+        } else if ((program == 2 || program == 10 || program == 11 || program == 24) && is_branch == '6') {
+            document.getElementById('bank').value = 'BCA PT MRE Dua (BW)';
+        }  else if ((program == 2 || program == 10 || program == 11 || program == 24) && is_branch == '7') {
+            document.getElementById('bank').value = 'BCA PT MRE Dua (Sby)';
+        }else {
+            document.getElementById('bank').value = 'BCA PT MRE';
         }
 
     }

@@ -40,7 +40,8 @@ class Dashboard extends CI_Controller {
 		// foreach($data)
 
 		// dd($data['student_grad']);
-
+		// dd($data);
+		// die();
 		set_active_menu('dashboard');
 		init_view('content_dashboard', $data);
 	}
